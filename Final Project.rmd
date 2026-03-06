@@ -1,5 +1,5 @@
 ---
-title: "Your Paper Title Here"
+title: "COVID-19 Vaccination Analysis"
 author: "Your Name(s)"
 date: Date
 output: pdf_document
