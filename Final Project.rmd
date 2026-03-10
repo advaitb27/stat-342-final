@@ -1,12 +1,13 @@
 ---
 title: "COVID-19 Vaccination Analysis"
-author: "Your Name(s)"
+author: "Yash Anand Rajpal, Advait Bhargav, Glit Hanpanitkitkan"
 date: Date
 output: pdf_document
 urlcolor: blue
 header-includes:
 - \usepackage{amsmath,amsfonts,amssymb}
 - \usepackage{setspace} \doublespacing
+- \usepackage{graphicx}
 fontsize: 11pt
 ---
 
@@ -18,12 +19,29 @@ fontsize: 11pt
 Write your abstract here.
 
 # Keywords
-*Keyword 1*, *Keyword 2*, *Keyword 3*, *Keyword 4*
+*Vaccine Efficacy*, *Bayesian Inference*, *Likelihood Inference*, *Likelihood Ratio Test*
 
 \newpage
 
 # Introduction / Background
-Provide an introduction with background information.
+The rise of COVID-19 in 2019 resulted in a global crisis affecting healthcare, economics, and daily life across societies worldwide, forcing governments to implement unprecedented public health measures. By the end of 2020, countries such as the United States had seen over a million cases of COVID. This meant the race to find a reliable vaccine was on and it became a primary goal for pharmaceuticals and governments worldwide in order to control the pandemic. Pfizer and BioNTech developed BNT162b2, an mRNA based vaccine, while Janssen and AstraZeneca did not.
+
+The clinical trial was a placebo-controlled, observer-blinded study that enrolled 43,548 participants aged 16 year or older. The participants were randomly assigned in a 1:1 ratio to receive either two doses of the BNT162b2 vaccine or a placebo, both administered 21 days apart. The primary endpoint was laboratory-confirmed COVID-19 occurring at least 7 days after the second dose (Polack et al., 2020).
+
+The results from the trial are stated in the table below:
+
+\begin{table}[h!]
+    \centering
+    \includegraphics[width=0.35\linewidth]{table1.png}
+    \caption{Vaccine Efficacy Against COVID-19 at Least 7 Days After Second Dose}
+    \label{tab:mytable}
+\end{table}
+
+```{r label = "table1", eval=TRUE, echo=FALSE}
+
+```
+
+
 
 ```{r label="important_R_code", eval=TRUE, echo=FALSE}
 # You can reference your code in the appendix (sample here).
