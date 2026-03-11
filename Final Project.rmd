@@ -41,6 +41,20 @@ The results from the trial are stated in the table below:
 
 ```
 
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\hline
+ & Cases & No cases & Total \\
+\hline
+BNT162b2 & 8 & 17,403 & 17,411 \\
+Placebo & 162 & 17,349 & 17,511 \\
+\hline
+Total & 170 & 34,752 & 34,922 \\
+\hline
+\end{tabular}
+\caption{Contingency table of cases by treatment group}
+\end{table}
 
 
 ```{r label="important_R_code", eval=TRUE, echo=FALSE}
