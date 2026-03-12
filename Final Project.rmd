@@ -83,13 +83,14 @@ From the table, we observe $t=8$ vaccine cases among the $n=170$ total cases. Th
 
 We are interested in an interval estimate for this parameter ($\psi$).
 
-The hypothesis test is: $H_0:\psi = 0.30$ versus $H_1:\psi>0.30$
+The hypothesis test is: $H_0:\psi = 0.30$ versus $H_1:\psi>0.30$ since the FDA requires at least 30% efficacy for a new therapy to be approved.
 
 ## Likelihood Inference
 Detail the likelihood approach.
 
 ## Bayesian Inference
-Detail the Bayesian approach.
+
+In a Bayesian framework, we specify a 
 
 # Results
 Present your findings. 
