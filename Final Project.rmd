@@ -13,6 +13,8 @@ fontsize: 11pt
 
 ```{r setup, include=FALSE}
 #Use this code chunk to include libraries, and set global options.
+library(knitr)
+library(tidyverse)
 ```
 
 # Abstract
@@ -26,7 +28,7 @@ Write your abstract here.
 # Introduction / Background
 The rise of COVID-19 in 2019 resulted in a global crisis affecting healthcare, economics, and daily life across societies worldwide, forcing governments to implement unprecedented public health measures. By the end of 2020, countries such as the United States had seen over a million cases of COVID. This meant the race to find a reliable vaccine was on and it became a primary goal for pharmaceuticals and governments worldwide in order to control the pandemic. Pfizer and BioNTech developed BNT162b2, an mRNA based vaccine, while Janssen and AstraZeneca did not.
 
-The clinical trial was a placebo-controlled, observer-blinded study that enrolled 43,548 participants aged 16 year or older. The participants were randomly assigned in a 1:1 ratio to receive either two doses of the BNT162b2 vaccine or a placebo, both administered 21 days apart. The primary endpoint was laboratory-confirmed COVID-19 occurring at least 7 days after the second dose (Polack et al., 2020).
+The clinical trial was a placebo-controlled, observer-blinded study that enrolled 43,448 participants aged 16 year or older. The participants were randomly assigned in a 1:1 ratio to receive either two doses of the BNT162b2 vaccine or a placebo, both administered 21 days apart. The primary endpoint was laboratory-confirmed COVID-19 occurring at least 7 days after the second dose (Polack et al., 2020).
 
 The results from the trial are stated in the table below:
 
@@ -37,24 +39,60 @@ The results from the trial are stated in the table below:
     \label{tab:mytable}
 \end{table}
 
-```{r label = "table1", eval=TRUE, echo=FALSE}
-
+```{r label= "vars", eval=TRUE, echo=FALSE}
+vacc_cas <- 8
+plac_cas <- 162
+n_vacc <- 17411
+n_plac <- 17511
+tot_cas <- vacc_cas + plac_cas
+n_tot <- n_vacc + n_plac
 ```
 
-\begin{table}[h]
-\centering
-\begin{tabular}{lccc}
-\hline
- & Cases & No cases & Total \\
-\hline
-BNT162b2 & 8 & 17,403 & 17,411 \\
-Placebo & 162 & 17,349 & 17,511 \\
-\hline
-Total & 170 & 34,752 & 34,922 \\
-\hline
-\end{tabular}
-\caption{Contingency table of cases by treatment group}
-\end{table}
+```{r label= "table1", eval=TRUE, echo=FALSE}
+table_df <- data.frame(
+  Group = c("BNT162b2 (Vaccine)", "Placebo", "Total"),
+  Cases = c(vacc_cas, plac_cas, tot_cas),
+  No_Cases = c(n_vacc - vacc_cas, n_plac - plac_cas, n_tot - tot_cas),
+  Total = c(n_vacc, n_plac, n_tot)
+)
+
+kable(table_df,
+      caption = "Contigency Table",
+      col.names = c("Group", "Cases", "No_Cases", "Total"),
+      align = "lccc")
+```
+The total number of people is less than the one in the study because some people left the study or were not reached out after.
+
+From the table above and the plot below, we can see that the estimated infection rates are very different. For vaccine group, we have: $\hat\pi_v = \frac{7}{17411} = 0.046\%$ and for the placebo group, we have $\hat \pi_p = \frac{162}{17511} = 0.925\%$. 
+
+```{r label= "histogram", eval=TRUE, echo=FALSE}
+bar_data <- data.frame(
+Group = c("BNT162b2", "Placebo"),
+Rate = c(vacc_cas / n_vacc * 100, plac_cas / n_plac * 100)
+)
+ggplot(bar_data, aes(x = Group, y = Rate, fill = Group)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  scale_fill_manual(values = c("BNT162b2" = "steelblue", "Placebo" = "salmon")) +
+  labs(x = "Group", y = "Infection Rate (%)",
+  title = "COVID-19 Infection Rates by Treatment Group") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  geom_text(aes(label = paste0(round(Rate, 3), "%")), vjust =-0.25, size = 4)
+```
+
+As the probabilities are so small, we can look at the relative risk which can be calculated as:
+
+$$
+\widehat{RR} = \frac{\pi_v}{\pi_p} = \frac{0.046\%}{0.925\%} \approx 0.0497
+$$
+
+In other words, The risk of Covid 19 case in vaccine group is roughly $5\%$ that of placebo group. Another way of saying this is that the Vaccine the risk of infection by $95\%$. This is called vaccine efficacy.
+
+$$
+\text{vaccine efficacy} = 1 - \widehat{RR} = 1 - \frac{\pi_v}{\pi_p}
+$$
+
+The US FDA requires that a new vaccine demonstrate at least $30\%$ efficacy for approval. Polack et al. (2020) reports a vaccine efficacy of $95.0\%$ with a $95\%$ Bayesian credible inetrval of $[90.3\% \quad 97.6\%]$ and they used a beta binomial model. In this paper, we intend to extend their analysis by using both Frequentist (likelihood-based) and Bayesian methods to estimate the efficacy $\psi$ and test the hypothesis $H_0 : \psi = 0.30$ vs $H_1 : \psi > 0.30$
 
 
 ```{r label="important_R_code", eval=TRUE, echo=FALSE}
@@ -91,7 +129,42 @@ Smith, A., & Johnson, C. (2023). *Title of the Online Article*. Retrieved from h
 # Appendix
 
 ## Code
-```{r ref.label = "important_R_code", eval=FALSE}
+```{r ref.label = "vars", eval=FALSE}
+vacc_cas <- 8
+plac_cas <- 162
+n_vacc <- 17411
+n_plac <- 17511
+tot_cas <- vacc_cas + plac_cas
+n_tot <- n_vacc + n_plac
+```
+
+```{r ref.label = "table1", eval=FALSE}
+table_df <- data.frame(
+  Group = c("BNT162b2 (Vaccine)", "Placebo", "Total"),
+  Cases = c(vacc_cas, plac_cas, tot_cas),
+  No_Cases = c(n_vacc - vacc_cas, n_plac - plac_cas, n_tot - tot_cas),
+  Total = c(n_vacc, n_plac, n_tot)
+)
+
+kable(table_df,
+      caption = "Vaccine Efficacy Against COVID-19 at Least 7 Days After Second",
+      col.names = c("Group", "Cases", "No_Cases", "Total"),
+      align = "lccc")
+```
+
+```{r ref.label = "histogram", eval=FALSE}
+bar_data <- data.frame(
+Group = c("BNT162b2", "Placebo"),
+Rate = c(vacc_cas / n_vacc * 100, plac_cas / n_plac * 100)
+)
+ggplot(bar_data, aes(x = Group, y = Rate, fill = Group)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  scale_fill_manual(values = c("BNT162b2" = "steelblue", "Placebo" = "salmon")) +
+  labs(x = "Group", y = "Infection Rate (%)",
+  title = "COVID-19 Infection Rates by Treatment Group") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  geom_text(aes(label = paste0(round(Rate, 3), "%")), vjust =-0.25, size = 4)
 ```
 
 ## Proofs
