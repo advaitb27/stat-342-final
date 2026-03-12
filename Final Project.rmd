@@ -72,11 +72,11 @@ $$\psi = \frac{1-2\pi}{1-\pi}, \quad -\infty < \psi < 1$$
 We can interpret $\psi$ understanding that:
 
 \begin{enumerate}
-\item when $\pi = 0$ (no vaccine cases), $\psi = 1$ (perfect efficacy)
-
-\item when $\pi = 0.5$ (equal rates), $\psi = 0$ (no efficacy)
-
-\item $\psi < 0$ means that the vaccine is harmful and should definitely not be used.
+    \item When $\pi = 0$ (no cases in the vaccinated group), the efficacy is perfect: $\psi = 1$.
+    
+    \item When $\pi = 0.5$ (incidence is equal in both vaccinated and control groups), there is no efficacy: $\psi = 0$.
+    
+    \item If $\psi < 0$, it indicates the vaccine is harmful and should definitely not be used.
 \end{enumerate}
 
 From the table, we observe $t=8$ vaccine cases among the $n=170$ total cases. This seems very small, but we should still conduct tests to verify.
@@ -90,7 +90,58 @@ Detail the likelihood approach.
 
 ## Bayesian Inference
 
-In a Bayesian framework, we specify a 
+In a Bayesian framework, we specify a prior distribution for $\pi$. A common choise for the binomial model is the Beta prior:
+
+$$g(\pi) = \text{Beta}(a, b)$$
+For prior elicitation, we choose a skeptical prior that reflects uncertainty about whether the vaccine is effective. This allows the data to play a larger role in determining the posterior distribution and helps prevent incorrectly concluding that the vaccine is effective when it may not be.
+
+Coming up with two prior beliefs about $\psi$:
+
+\begin{enumerate}
+  \item For $\psi \ge 0.30$, we have
+  $$
+  \frac{1 - 2\pi}{1 - \pi} \ge 0.30.
+  $$
+  Multiply both sides by $1-\pi$:
+  $$
+  1 - 2\pi \ge 0.30(1-\pi).
+  $$
+  Expanding gives
+  $$
+  1 - 2\pi \ge 0.30 - 0.30\pi.
+  $$
+  Rearranging,
+  $$
+  0.70 \ge 1.70\pi,
+  $$
+  so
+  $$
+  \pi \le \frac{0.70}{1.70} = \frac{7}{17}.
+  $$
+  Therefore,
+  $$
+  P\left(\pi \le \frac{7}{17}\right) = 0.05.
+  $$
+
+  \item For $\psi \ge 0$, we have
+  $$
+  \frac{1 - 2\pi}{1 - \pi} \ge 0.
+  $$
+  Since $1-\pi > 0$ for $0 < \pi < 1$, this is equivalent to
+  $$
+  1 - 2\pi \ge 0.
+  $$
+  Hence,
+  $$
+  \pi \le \frac{1}{2}.
+  $$
+  Therefore,
+  $$
+  P\left(\pi \le \frac{1}{2}\right) = 0.50.
+  $$
+\end{enumerate}
+
+So we want a $Beta(a, b)$ prior for $\pi$ where the median is $\frac{1}{2}$ and the 
 
 # Results
 Present your findings. 
