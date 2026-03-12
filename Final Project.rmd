@@ -50,7 +50,40 @@ The results from the trial are stated in the table below:
 # Statistical Methods
 
 ## Model
-Describe the statistical model used.
+
+Let $X$ denote the number of COVID-19 cases in the vaccine group among the $n_1 = 17,411$ vaccinated with BNT162b2 participants, and let Y denote the number of cases in the placebo group among the $n_2 = 17,511$ placebo participants. We assume
+$$X\sim \text{Binom}(n_1,\pi_v) \text{ independently of } Y\sim \text{Binom}(n_2, \pi_p)$$
+
+where $\pi_v$ and $\pi_p$ are the true infection probabilities in the vaccine and placebo groups, respectfully.
+
+The parameter of interest is the vaccine efficacy:
+$$\psi  = 1 -\frac{\pi_v}{\pi_p} = \frac{\pi_p-\pi_v}{\pi_p}$$
+Rather than working with two binomial random variables, we adopt a single binomial model. 
+
+Let's look at an alternative model that we should use instead for this scenario. Let $T$ denote the number of vaccine-group cases among the $n=170$ total confirmed COVID-19 cases, conditional on $X+Y=170$. The distribution of $T$ be quite approximated by a binomial distribution.
+
+Then
+$$T\sim Binom(n=170, \pi)$$
+where $\pi = P(\text{aspirin|case)}$ and can be shown to be equal to
+$$\pi = \frac{n_1\pi_v}{n_1\pi_v+n_2\pi_p} = \frac{\pi_v}{\pi_v + \pi_p}$$
+
+The vaccine efficacy $\psi$ can be written in terms of $\pi$ as:
+$$\psi = \frac{1-2\pi}{1-\pi}, \quad -\infty < \psi < 1$$
+We can interpret $\psi$ understanding that:
+
+\begin{enumerate}
+\item when $\pi = 0$ (no vaccine cases), $\psi = 1$ (perfect efficacy)
+
+\item when $\pi = 0.5$ (equal rates), $\psi = 0$ (no efficacy)
+
+\item $\psi < 0$ means that the vaccine is harmful and should definitely not be used.
+\end{enumerate}
+
+From the table, we observe $t=8$ vaccine cases among the $n=170$ total cases. This seems very small, but we should still conduct tests to verify.
+
+We are interested in an interval estimate for this parameter ($\psi$).
+
+The hypothesis test is: $H_0:\psi = 0.30$ versus $H_1:\psi>0.30$
 
 ## Likelihood Inference
 Detail the likelihood approach.
