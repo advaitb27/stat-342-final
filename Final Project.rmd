@@ -15,6 +15,7 @@ fontsize: 11pt
 #Use this code chunk to include libraries, and set global options.
 library(knitr)
 library(tidyverse)
+library(LearnBayes)
 ```
 
 # Abstract
@@ -196,7 +197,30 @@ Coming up with two prior beliefs about $\psi$:
   $$
 \end{enumerate}
 
-So we want a $Beta(a, b)$ prior for $\pi$ where the median is $\frac{1}{2}$ and the 
+So we want a $Beta(a, b)$ prior for $\pi$ where the median is $\frac{1}{2}$ and the 5th percentile is $\frac{7}{17}$, or $P(\pi \le \frac{7}{17}) = 0.05$.
+
+Therefore we can use the `beta.select` function from the `LearnBayes` library to find the beta prior.
+
+```{r label = "beta coeffs", eval=TRUE, echo=FALSE}
+b_coeff = beta.select(quantile1 = list(p = 0.05, x = 7/17),
+                      quantile2 = list(p=0.5, x = 0.5))
+```
+
+We obtain $a = 43.03$ and $b= 43.03$.
+
+With the skeptical $Beta(43.03, 43.03)$, we have the beta prior for $\pi$:
+
+```{r label = "beta prior plot", eval = TRUE, echo=FALSE}
+x_values = seq(0, 1, length.out = 1000)
+alpha = b_coeff[1]
+beta = b_coeff[2]
+density_values = dbeta(x_values, shape1 = alpha, shape2 = beta)
+
+plot(x_values, density_values, type = 'l',
+     xlab = expression(pi), ylab = "PDF",
+     main = paste("Beta(", alpha, ",", beta, ") prior for vaccine data", sep = ""))
+```
+
 
 # Results
 Present your findings. 
@@ -216,43 +240,29 @@ Smith, A., & Johnson, C. (2023). *Title of the Online Article*. Retrieved from h
 
 # Appendix
 ## Code
+
 ```{r ref.label = "vars", eval=FALSE}
-vacc_cas <- 8
-plac_cas <- 162
-n_vacc <- 17411
-n_plac <- 17511
-tot_cas <- vacc_cas + plac_cas
-n_tot <- n_vacc + n_plac
+
 ```
 
 ```{r ref.label = "table1", eval=FALSE}
-table_df <- data.frame(
-  Group = c("BNT162b2 (Vaccine)", "Placebo", "Total"),
-  Cases = c(vacc_cas, plac_cas, tot_cas),
-  No_Cases = c(n_vacc - vacc_cas, n_plac - plac_cas, n_tot - tot_cas),
-  Total = c(n_vacc, n_plac, n_tot)
-)
 
-kable(table_df,
-      caption = "Vaccine Efficacy Against COVID-19 at Least 7 Days After Second",
-      col.names = c("Group", "Cases", "No_Cases", "Total"),
-      align = "lccc")
 ```
 
 ```{r ref.label = "histogram", eval=FALSE}
-bar_data <- data.frame(
-Group = c("BNT162b2", "Placebo"),
-Rate = c(vacc_cas / n_vacc * 100, plac_cas / n_plac * 100)
-)
-ggplot(bar_data, aes(x = Group, y = Rate, fill = Group)) +
-  geom_bar(stat = "identity", width = 0.5) +
-  scale_fill_manual(values = c("BNT162b2" = "steelblue", "Placebo" = "salmon")) +
-  labs(x = "Group", y = "Infection Rate (%)",
-  title = "COVID-19 Infection Rates by Treatment Group") +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  geom_text(aes(label = paste0(round(Rate, 3), "%")), vjust =-0.25, size = 4)
+
 ```
+
+Code for producing alpha and beta for beta distribution.
+```{r ref.label = "beta coeffs", eval = FALSE}
+
+```
+
+Code for plotting $beta(\alpha, \beta)$ distribution
+```{r ref.label = "beta prior plot", eval = FALSE}
+
+```
+
 
 ## Proofs
 If applicable, include detailed mathematical derivations or additional theoretical explanations.
