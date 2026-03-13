@@ -315,7 +315,7 @@ ggplot(plot_data, aes(x = pi, y = density, color = distribution)) +
 
 We can also compute the posterior median:
 
-```{r}
+```{r label = "posterior median", eval = TRUE, echo = FALSE}
 posterior_median_pi = qbeta(0.5, shape1 = 51.04, shape2 = 205.04)
 cat("Posterior Median: ", round(posterior_median_pi, 4))
 ```
@@ -323,16 +323,16 @@ This matches the plot where the orange line centers around 0.2.
 
 We can find the equal tail 95% interval.
 
-```{r}
+```{r label = "posterior distribution", eval = TRUE, echo = FALSE}
 qbeta(p = c(0.025, 0.975), shape1 = 51.04, shape2 = 205.04)
 ```
 This matches what can be seen from the graph where the posterior distribution flattens out at about 0.13 and 0.26.
 
-
+The Bayesian interpretation is that there is a 95% probability that the true probability of infection for a vaccinated individual lies in the range 0.1528 to 0.2503.
 
 We can also find the highest posterior density interval (HPDI) for $\pi$ using the `HDInterval` library.
 
-```{r}
+```{r label = "hdi interval", eval = TRUE, echo = FALSE}
 posterior_interval = hdi(qbeta, credMass=0.95, shape1 = 51.04,
 shape2 = 205.04)
 
@@ -368,7 +368,27 @@ Substituting,
 
 This means that the posterior median of $\psi$ is 0.7523.
 
-### Calculating the Bayesian P-Value
+### Calculating the Bayesian P-value
+
+The Bayesian analog of the P-value is to calculate the posterior probability of the null hypothesis.
+
+To calculate the Bayesian P-value,
+
+\begin{align*}
+\text{Bayes P-value} &: P(H_0 \text{ is TRUE }|X) \\
+&= P(\psi \le \psi_0^{(null)}|X=x)
+\end{align*}
+
+In this scenario, $P(\psi \le 0.30 | 8)$
+
+We can convert to in terms of $\pi$ like from lecture.
+
+Therefore $P(\frac{1-2\pi}{1-\pi} \le 0.3 | 8)$ = $P(\pi \ge \frac{0.7}{0.17}|8)$
+
+```{r label = "bayesian pval", eval = TRUE, echo = FALSE}
+pbeta(0.7/0.17, shape1 = 51.04, shape2 = 205.04, lower.tail = FALSE)
+
+```
 
 # Results
 Present your findings. 
@@ -413,6 +433,26 @@ Code for plotting $beta(\alpha, \beta)$ prior distribution
 
 Code for plotting beta prior and posterior distributions
 ```{r ref.label="prior vs post plot", eval=FALSE}
+
+```
+
+Code for calculating posterior median
+```{r ref.label="posterior median", eval = FALSE}
+
+```
+
+Code for getting posterior distribution
+```{r ref.label = "posterior distribution", eval = FALSE}
+
+```
+
+Code for getting HDI interval
+```{r ref.label = "hdi interval", eval = FALSE}
+
+```
+
+Code for getting bayesian p-value
+```{r ref.label="bayesian pval", eval = FALSE}
 
 ```
 
