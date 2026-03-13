@@ -146,6 +146,53 @@ The hypothesis test is: $H_0:\psi = 0.30$ versus $H_1:\psi>0.30$. We choose $(> 
 ## Likelihood Inference
 Detail the likelihood approach.
 
+For $t = 8$ vaccine cases, The likelihood function for $\pi$ for $T \sim Binom(n = 170, \pi)$ can be written as follows:
+
+$$
+L(\pi) = \binom{170}{8}\pi^8 (1 - \pi)^{162}
+$$
+Since, $\psi = \frac{1-2\pi}{1-\pi}, \quad -\infty < \psi < 1$, by solving for $\pi$ and then plugging it into the likelihood function we get:
+
+\begin{align*}
+  \psi &= \frac{1-2\pi}{1-\pi}, \quad -\infty < \psi < 1 \\
+  \psi (1 - \pi) &= 1 - 2 \pi \\
+  \psi -\psi\pi  &= 1 - 2 \pi \\
+  2\pi - \psi\pi &= 1 - \psi \\
+  \pi (2 - \psi) &= 1 - \psi \\
+  \pi &= \frac{1 - \psi}{2 - \psi}
+\end{align*}
+
+
+\begin{align*}
+L(\pi) &= \binom{170}{8}\pi^8 (1 - \pi)^{162} \\
+L^{\ast} (\psi) &= \binom{170}{8} \left(\frac{1 - \psi}{2 - \psi}\right)^8 \left(1 - (\frac{1 - \psi}{2 - \psi})\right)^{162} \quad  \text{after substituting for }  \pi \\
+                &= \binom{170}{8} \left(\frac{1 - \psi}{2 - \psi}\right)^8 \left(\frac{1}{2 - \psi}\right)^{162}
+\end{align*}
+
+By taking the log of the likelihood function, we will get that:
+
+\begin{align*}
+ \ell = \ln [L^\ast (\psi)] &= \ln\left(\binom{170}{8}\right) + 8 \ln\left(\frac{1 - \psi}{2 - \psi}\right) + 162 \ln (\frac{1}{2 - \psi})^{162} \\
+                            &= \ln\left(\binom{170}{8}\right) + 8 \ln(1 - \psi) - 8\ln(2 - \psi) - 162 \ln (2 - \psi) \\
+                            &= \ln\left(\binom{170}{8}\right) + 8 \ln(1 - \psi) -170 \ln (2 - \psi)
+\end{align*}
+
+
+Now we take the derivative of the log likelihood function $\ell$ with respect to $\psi$:
+
+
+$$
+\ell' = \frac{-8}{1 - \psi} + \frac{170}{2 - \psi} 
+$$
+By setting it equal to 0 and solving for $\psi$, we get:
+\begin{align*}
+\frac{-8}{1 - \psi} + \frac{170}{2 - \psi} &= 0 \\
+\frac{-8(2 - \psi) + 170(1 - \psi)}{(1 - \psi)(2 - \psi)} &= 0 \\
+-8(2 - \psi) + 170(1 - \psi) &= 0 \\
+-16 + 8 \psi + 170 -170\psi &= 0 \\
+\psi &= \frac{154}{162}
+\end{align*}
+
 ## Bayesian Inference
 
 In a Bayesian framework, we specify a prior distribution for $\pi$. A common choise for the binomial model is the Beta prior:
