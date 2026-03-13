@@ -124,7 +124,7 @@ $$\pi = \frac{n_1\pi_v}{n_1\pi_v+n_2\pi_p} = \frac{\pi_v}{\pi_v + \pi_p}$$
 
 The vaccine efficacy $\psi$ can be written in terms of $\pi$ as:
 $$\psi = \frac{1-2\pi}{1-\pi}, \quad -\infty < \psi < 1$$
-We can interpret $\psi$ understanding that:
+We can interpret the vaccine efficacy, $\psi$, by understanding that:
 
 \begin{enumerate}
     \item When $\pi = 0$ (no cases in the vaccinated group), the efficacy is perfect: $\psi = 1$.
@@ -138,7 +138,7 @@ From the table, we observe $t=8$ vaccine cases among the $n=170$ total cases. Th
 
 We are interested in an interval estimate for this parameter ($\psi$).
 
-The hypothesis test is: $H_0:\psi = 0.30$ versus $H_1:\psi>0.30$ since the FDA requires at least 30% efficacy for a new therapy to be approved.
+The hypothesis test is: $H_0:\psi = 0.30$ versus $H_1:\psi>0.30$. We choose $ > 0.30$ because the FDA requires \textbf{at least} 30% efficacy in order for approval.
 
 ## Likelihood Inference
 Detail the likelihood approach.
@@ -147,7 +147,7 @@ Detail the likelihood approach.
 
 In a Bayesian framework, we specify a prior distribution for $\pi$. A common choise for the binomial model is the Beta prior:
 
-$$g(\pi) = \text{Beta}(a, b)$$
+$$g(\pi) = Beta(a, b)$$
 For prior elicitation, we choose a skeptical prior that reflects uncertainty about whether the vaccine is effective. This allows the data to play a larger role in determining the posterior distribution and helps prevent incorrectly concluding that the vaccine is effective when it may not be.
 
 Coming up with two prior beliefs about $\psi$:
