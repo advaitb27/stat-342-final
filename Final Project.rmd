@@ -16,6 +16,8 @@ fontsize: 11pt
 library(knitr)
 library(tidyverse)
 library(LearnBayes)
+library(ggplot2)
+library(HDInterval)
 ```
 
 # Abstract
@@ -139,7 +141,7 @@ From the table, we observe $t=8$ vaccine cases among the $n=170$ total cases. Th
 
 We are interested in an interval estimate for this parameter ($\psi$).
 
-The hypothesis test is: $H_0:\psi = 0.30$ versus $H_1:\psi>0.30$. We choose $ > 0.30$ because the FDA requires \textbf{at least} 30% efficacy in order for approval.
+The hypothesis test is: $H_0:\psi = 0.30$ versus $H_1:\psi>0.30$. We choose $(> 0.30)$ because the FDA requires \textbf{at least} 30% efficacy in order for approval.
 
 ## Likelihood Inference
 Detail the likelihood approach.
@@ -221,6 +223,105 @@ plot(x_values, density_values, type = 'l',
      main = paste("Beta(", alpha, ",", beta, ") prior for vaccine data", sep = ""))
 ```
 
+Now, since the Beta distribution is conjugate to the binomial, the posterior must also be a Beta distribution.
+
+Then
+
+\begin{align*}
+f(T|\pi) &\sim Binom(170, \pi) \text{ as the data model,} \\
+g(\pi) &= Beta(43.04, 43.04) \text{ as the prior} \\
+h(\pi|t) &= Beta(43.04 + t, 170 + 43.04 - t) \text{ as the posterior} \\
+\text{where t = 8, } h(\pi|8) &= Beta(43.04 + 8, 170 + 43.04 - 8) \\
+\text{thus } h(\pi|8) &= Beta(51.04, 205.04)
+\end{align*}
+
+```{r label = "prior vs post plot", eval = TRUE, echo = FALSE}
+x_values <- seq(0, 1, length.out = 1000)
+n = 170
+t = 8
+
+# posterior parameters
+alpha_post <- alpha + t
+beta_post  <- beta + (n - t)
+
+# densities
+prior_density <- dbeta(x_values, shape1 = alpha, shape2 = beta)
+post_density  <- dbeta(x_values, shape1 = alpha_post, shape2 = beta_post)
+
+plot_data <- data.frame(
+  pi = rep(x_values, 2),
+  density = c(prior_density, post_density),
+  distribution = rep(c("prior", "posterior"), each = length(x_values))
+)
+
+# plot
+ggplot(plot_data, aes(x = pi, y = density, color = distribution)) +
+  geom_line(linewidth = 0.5) +
+  labs(
+    title = "Beta prior and posterior for vaccine data",
+    x = expression(pi),
+    y = "PDF",
+    color = "distribution"
+  ) +
+  theme_minimal()
+```
+
+We can also compute the posterior median:
+
+```{r}
+posterior_median_pi = qbeta(0.5, shape1 = 51.04, shape2 = 205.04)
+cat("Posterior Median: ", round(posterior_median_pi, 4))
+```
+This matches the plot where the orange line centers around 0.2.
+
+We can find the equal tail 95% interval.
+
+```{r}
+qbeta(p = c(0.025, 0.975), shape1 = 51.04, shape2 = 205.04)
+```
+This matches what can be seen from the graph where the posterior distribution flattens out at about 0.13 and 0.26.
+
+
+
+We can also find the highest posterior density interval (HPDI) for $\pi$ using the `HDInterval` library.
+
+```{r}
+posterior_interval = hdi(qbeta, credMass=0.95, shape1 = 51.04,
+shape2 = 205.04)
+
+cat("95% HPDI: ", round(posterior_interval, 4))
+
+```
+This also matches what can be seen from the graph where the posterior distribution flattens out at about 0.13 and 0.26.
+
+Overall, the HPDI and equal tail 95% interval are quite similar which suggests that the posterior distribution is relatively symmetrical.
+
+### Translating back to $\psi$:
+
+Now that we have the posterior median and intervals for $\pi$, we want to transform it back in terms of $\psi$ in order to keep going with the analysis.
+
+The posterior median of $\pi$ is 0.1985.
+
+So $P(\pi < 0.1985 | t) = 0.5$.
+
+Recall that $\psi = \frac{1-2\pi}{1-\pi}$.
+
+Isolating $\pi$, then $\pi = \frac{1-\psi}{2-\psi}$.
+
+Substituting,
+
+\begin{align*}
+& P(\frac{1-\psi}{2-\psi} < 0.1985|t) = 0.5 \\
+& P(1-\psi < 0.1985(2-\psi)|t) = 0.5 \\
+& P(1-\psi < 0.397 - 0.1985\psi|t) = 0.5 \\
+& P(\psi - 0.1985 \psi > 0.603|t) = 0.5 \\
+& P(\psi(1-0.1985) > 0.603|t) = 0.5 \\
+& P(\psi > 0.7523|t) = 0.5
+\end{align*}
+
+This means that the posterior median of $\psi$ is 0.7523.
+
+### Calculating the Bayesian P-Value
 
 # Results
 Present your findings. 
@@ -258,10 +359,16 @@ Code for producing alpha and beta for beta distribution.
 
 ```
 
-Code for plotting $beta(\alpha, \beta)$ distribution
+Code for plotting $beta(\alpha, \beta)$ prior distribution
 ```{r ref.label = "beta prior plot", eval = FALSE}
 
 ```
+
+Code for plotting beta prior and posterior distributions
+```{r ref.label="prior vs post plot", eval=FALSE}
+
+```
+
 
 
 ## Proofs
