@@ -18,6 +18,7 @@ library(tidyverse)
 library(LearnBayes)
 library(ggplot2)
 library(HDInterval)
+library(fastR2)
 ```
 
 # Abstract
@@ -144,7 +145,6 @@ We are interested in an interval estimate for this parameter ($\psi$).
 The hypothesis test is: $H_0:\psi = 0.30$ versus $H_1:\psi>0.30$. We choose $(> 0.30)$ because the FDA requires \textbf{at least} 30% efficacy in order for approval.
 
 ## Likelihood Inference
-Detail the likelihood approach.
 
 For $t = 8$ vaccine cases, The likelihood function for $\pi$ for $T \sim Binom(n = 170, \pi)$ can be written as follows:
 
@@ -180,7 +180,6 @@ By taking the log of the likelihood function, we will get that:
 
 Now we take the derivative of the log likelihood function $\ell$ with respect to $\psi$:
 
-
 $$
 \ell' = \frac{-8}{1 - \psi} + \frac{170}{2 - \psi} 
 $$
@@ -190,12 +189,203 @@ By setting it equal to 0 and solving for $\psi$, we get:
 \frac{-8(2 - \psi) + 170(1 - \psi)}{(1 - \psi)(2 - \psi)} &= 0 \\
 -8(2 - \psi) + 170(1 - \psi) &= 0 \\
 -16 + 8 \psi + 170 -170\psi &= 0 \\
-\psi &= \frac{154}{162}
+\hat \psi_0 ^{\text{mle}} = \frac{154}{162}
 \end{align*}
+
+Similarly from the slide 18, we can calculate the MLE using the following formula:
+$$
+\hat \psi_0 ^{\text{mle}} = \frac{n - 2T}{n -T} = \frac{170 - 2(8)}{170 - 8} = \frac{154}{162}
+$$
+We can take the 2nd derivative test to check if it is global maximum:
+
+By setting it equal to 0 and solving for $\psi$, we get:
+\begin{align*}
+\frac{d \ell'}{d \psi} &= \frac{d}{d \psi}\frac{-8}{1 - \psi} + \frac{170}{2 - \psi} \\
+                \ell'' &= \frac{-8}{(1 - \psi)^2} + \frac{170}{(2 - \psi)^2} 
+\end{align*}
+
+As $\psi < 1$, we can see that $\ell'' < 0$, hence $\psi_0^\text{mle} = \frac{154}{162}$ is a global maximum.
+
+Under regulatory conditions, Thm 12.1 for a large sample distribution of $\hat \psi_0^\text{mle}$ is: 
+
+$$
+\hat \psi^{mle}_0 \approx Norm \left(\psi_0, \frac{1}{\sqrt{I(\psi_0)}}\right)
+$$
+where $I(\psi_0) = n E[- \ell''(\psi)]$. as  we have one observation only $t = 8$ so we have that:
+
+\begin{align*}
+I({\psi}_0) &= -\ell''(\hat{\psi}_0^{mle}) \\
+                &= -\left( \frac{-8}{(1-\hat{\psi}_0^{mle})^2} + \frac{170}{(2-\hat{\psi}_0^{mle})^2} \right) \\
+                &= \frac{8}{(1-\hat{\psi}_0^{mle})^2} - \frac{170}{(2-\hat{\psi}_0^{mle})^2} \\
+                &= \frac{8}{\left(1-\frac{154}{162}\right)^2} - \frac{170}{\left(2-\frac{154}{162}\right)^2} \\
+                &= \frac{8}{\left(\frac{8}{162}\right)^2} - \frac{170}{\left(\frac{170}{162}\right)^2} \\
+                &= \frac{8}{\left(\frac{8}{162}\right)^2}- \frac{170}{\left(\frac{170}{162}\right)^2} \\
+                &= \frac{8 \cdot 162^2}{8^2} - \frac{170 \cdot 162^2}{170^2} \\
+                &= 3126.1235
+\end{align*}
+
+
+# Changes
+So, we get:
+$$
+\hat \psi^{mle}_0 \approx Norm \left(\psi_0, \sqrt{\frac{1}{3126.1235}}\right)
+$$
+And, now we can calculate a $95\%$ large sample confidence interval for $\psi_0$ by using the formula:
+
+$$
+\hat \psi_0^\text{mle} \pm z_\frac{\alpha}{2} \widehat{SE} = \hat \psi_0^\text{mle} \pm z_\frac{\alpha}{2} \frac{1}{\sqrt{I(\hat \psi_0^\text{mle})}}
+$$
+
+```{r label = "confidence interval", eval = TRUE, echo = FALSE}
+mle = 154/162
+z = 1.96
+se = 1/ sqrt(3126.1235)
+
+lower = mle - z*se
+upper = mle + z*se
+
+cat(c(lower, upper))
+```
+
+By plugging in the values, we can say that we are $95\%$ confident that the on average the actual value for $\psi_0$ lies within $[0.9156, 0.9857]$ 
+
+
+```{r label = "Second order approximation plot", eval = TRUE, echo = FALSE, warning = FALSE}
+loglik.psi <- function(psi){
+  ifelse((psi >= 1), NA,
+         log(choose(170,8)) + 8*log(1-psi) - 170*log(2-psi))
+}
+
+ml.psi <- maxLik2(loglik = loglik.psi,
+                    start = 0.9)
+
+plot(ml.psi) +
+  labs(title = "Second order approximation",
+       x = expression(psi))
+```
+
+Similarly,  the parametric bootstrap percentile interval for $\psi_0$ is 
+```{r label = "bootstrap", eval = TRUE, echo = FALSE}
+set.seed(394)
+
+B <- 1000   
+
+n <- 170
+Tobs <- 8
+
+# MLE
+psi_hat <- (n - 2*Tobs)/(n - Tobs)
+
+# Converting it to pi
+pi_hat <- (1 - psi_hat)/(2 - psi_hat)
+
+psi_hat = replicate(n = B, expr = {
+      Tb <- rbinom(1, n, pi_hat)
+      (n - 2*Tb)/(n - Tb)}
+    )
+
+sd = sd(psi_hat) # standard error
+avg = mean(psi_hat) # estimate
+
+
+# Confidence Interval
+lower = avg - 1.96 * sd
+upper = avg + 1.96 * sd
+
+cat(c(lower, upper))
+
+```
+
+# We need to state null and alternative hypothesis:
+Now, We test
+$$
+H_0 : \psi_0 = 0.3\qquad \text{vs} \qquad H_1 : \psi_0 \neq 0.3 .
+$$
+
+
+The likelihood ratio test statistic is based on
+$$
+W = 2\ln \Lambda  \quad where \quad \Lambda = \frac{L(\hat \psi_0^\text{mle})}{L(\psi_0^\text{null})}
+$$
+
+
+$$
+W = 2\left[\ell(\hat\psi_0^\text{mle}) - \ell(\psi_0^\text{null})\right].
+$$
+
+The log-likelihood function is
+$$
+\ell(\psi) = \ln\binom{170}{8} + 8\ln(1-\psi) -170\ln(2-\psi)
+$$
+
+
+By substituting $\hat\psi_0^\text{mle} = \frac{154}{162}$ and $\psi_0^\text{null} = 0.3$ in the log likelihood function, we get:
+
+\begin{align*}
+W &= 2 \Bigg[ \left( \ln\binom{170}{8} + 8\ln\left(1-\frac{154}{162}\right) -170\ln\left(2-\frac{154}{162}\right)\right) \\
+  &\qquad -\left(\ln\binom{170}{8} + 8\ln(1-0.3) -170\ln(2-0.3)\right)\Bigg] \\
+   &= 2 \left[8\ln\left(\frac{\frac{8}{162}}{0.7}\right) - 170\ln\left(\frac{\frac{170}{162}}{1.7}\right) \right] \\
+   &= 121.6012
+\end{align*}
+
+
+We know that under $H_0$, the test statistic satisfies $W \sim \chi^2_1$ as we are only testing one parameter. Thus the P-value can be calculated as
+
+$$
+\text{P-value} = P(\chi^2_1 \ge W) = 1 - F_{\chi^2_1}(W) = 1 - F_{\chi^2_1}(121.6012)
+$$
+
+```{r label = "pval", eval = TRUE, echo = FALSE}
+W <- 2*((8*log(8 / (162 * 0.7)) - 170*log(170/ (162* 1.7)))) 
+p_val <- pchisq(W, df = 1, lower.tail = FALSE)
+p_val
+```
+
+The P value is 0.
+
+An alternative to calculate the P value is to calculate an empirical p value by generating large number B of samples from the null hypothesis
+
+```{r label = "empirical pval", eval = TRUE, echo = FALSE}
+psi0 = 0.3
+pi0 = (1 - psi0) / (2 - psi0)
+
+# observed LRT statistic
+W = 2*(loglik.psi(psi_hat) - loglik.psi(psi0))
+
+w = numeric(B)
+
+# Bootstrap
+for(b in 1:B){
+
+  Tb = rbinom(1,n,pi0)
+
+  psi_mle = (n - 2*Tb)/(n - Tb)
+
+  log_hat = loglik.psi(psi_mle)
+  log_0   = loglik.psi(psi0)
+
+  w[b] = 2*(log_hat - log_0)
+}
+
+# empirical p-value
+p_val_b = mean(w >= W)
+p_val_b
+```
+and we get that The empirical P value is also 0.
+
+```{r label = "simulated Ws under null histogram", eval = TRUE, echo = FALSE}
+hist(w, breaks = 20, 
+     xlab = "W", 
+     ylab = "Frequency", 
+     main = "Histogram of simulate W* values under H0", 
+     col = "lightblue")
+```
+
+We can see that the histogram is approximately normal and the empirical P value is 0. This is similar to what we calculated before with chi-squared P value which supports that chi-squared approximation is reasonable for this data.
 
 ## Bayesian Inference
 
-In a Bayesian framework, we specify a prior distribution for $\pi$. A common choise for the binomial model is the Beta prior:
+In a Bayesian framework, we specify a prior distribution for $\pi$. A common choice for the binomial model is the Beta prior:
 
 $$g(\pi) = Beta(a, b)$$
 For prior elicitation, we choose a skeptical prior that reflects uncertainty about whether the vaccine is effective. This allows the data to play a larger role in determining the posterior distribution and helps prevent incorrectly concluding that the vaccine is effective when it may not be.
@@ -452,15 +642,48 @@ Smith, A., & Johnson, C. (2023). *Title of the Online Article*. Retrieved from h
 # Appendix
 ## Code
 
+Code for initializing variables
 ```{r ref.label = "vars", eval=FALSE}
 
 ```
 
+Code for contegency table
 ```{r ref.label = "table1", eval=FALSE}
 
 ```
 
+Code for Proportions histogram
 ```{r ref.label = "histogram", eval=FALSE}
+
+```
+
+Code for large sample confidence interval    
+```{r ref.label = "confidence interval", eval=FALSE}
+
+```
+
+Code for Second order taylor approximation plot
+```{r ref.label = "Second order approximation plot", eval=FALSE}
+
+```
+
+Code for bootsrap percentile interval
+```{r ref.label = "bootstrap", eval=FALSE}
+
+```
+
+Code for P value
+```{r ref.label = "pval", eval=FALSE}
+
+```
+
+Code for empirical P value
+```{r ref.label = "empirical pval", eval=FALSE}
+
+```
+
+Code for simulated Ws under null histogram
+```{r ref.label = "simulated Ws under null histogram", eval=FALSE}
 
 ```
 
