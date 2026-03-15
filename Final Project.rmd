@@ -259,17 +259,36 @@ loglik.psi <- function(psi){
 ml.psi <- maxLik2(loglik = loglik.psi,
                     start = 0.9)
 
+ml.psi
 plot(ml.psi) +
   labs(title = "Second order approximation",
        x = expression(psi))
 ```
+
+```{r}
+T= 8
+n =180
+
+loglik.binom <- function(pi, x, n){   # parameter must be first
+  ifelse((pi < 0 | pi > 1), NA,
+         x*log(pi) + (n-x)*log(1-pi))
+}
+
+ml.binom <- maxLik2(loglik = loglik.binom,
+                    start = 0.5, x = T, n = n)
+ml.binom
+plot(ml.binom) +
+  labs(title = "Second order approximation\n to Binomial Likelihood",
+       subtitle = "n = 170, x = 8",
+       x = expression(pi))
+```
+
 
 Similarly,  the parametric bootstrap percentile interval for $\psi_0$ is 
 ```{r label = "bootstrap", eval = TRUE, echo = FALSE}
 set.seed(394)
 
 B <- 1000   
-
 n <- 170
 Tobs <- 8
 
@@ -287,13 +306,11 @@ psi_hat = replicate(n = B, expr = {
 sd = sd(psi_hat) # standard error
 avg = mean(psi_hat) # estimate
 
-
 # Confidence Interval
 lower = avg - 1.96 * sd
 upper = avg + 1.96 * sd
 
 cat(c(lower, upper))
-
 ```
 
 # We need to state null and alternative hypothesis:
