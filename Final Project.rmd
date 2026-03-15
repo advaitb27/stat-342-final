@@ -259,7 +259,8 @@ loglik.psi <- function(psi){
 ml.psi <- maxLik2(loglik = loglik.psi,
                     start = 0.9)
 
-ml.psi
+coef(ml.psi)
+
 plot(ml.psi) +
   labs(title = "Second order approximation",
        x = expression(psi))
@@ -276,7 +277,7 @@ loglik.binom <- function(pi, x, n){   # parameter must be first
 
 ml.binom <- maxLik2(loglik = loglik.binom,
                     start = 0.5, x = T, n = n)
-ml.binom
+coef(ml.binom)
 plot(ml.binom) +
   labs(title = "Second order approximation\n to Binomial Likelihood",
        subtitle = "n = 170, x = 8",
@@ -298,19 +299,15 @@ psi_hat <- (n - 2*Tobs)/(n - Tobs)
 # Converting it to pi
 pi_hat <- (1 - psi_hat)/(2 - psi_hat)
 
+# Bootstrap
 psi_hat = replicate(n = B, expr = {
       Tb <- rbinom(1, n, pi_hat)
       (n - 2*Tb)/(n - Tb)}
     )
 
-sd = sd(psi_hat) # standard error
-avg = mean(psi_hat) # estimate
+# CI
+quantile(psi_hat, c(0.025, 0.975))
 
-# Confidence Interval
-lower = avg - 1.96 * sd
-upper = avg + 1.96 * sd
-
-cat(c(lower, upper))
 ```
 
 # We need to state null and alternative hypothesis:
@@ -613,7 +610,6 @@ Therefore $P(\frac{1-2\pi}{1-\pi} \le 0.3 | 8)$ = $P(\pi \ge \frac{0.7}{0.17}|8)
 
 ```{r label = "bayesian pval", eval = TRUE, echo = FALSE}
 pbeta(0.7/0.17, shape1 = 51.04, shape2 = 205.04, lower.tail = FALSE)
-
 ```
 
 # Results
