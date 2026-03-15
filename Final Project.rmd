@@ -33,7 +33,7 @@ Write your abstract here.
 \newpage
 
 # Introduction / Background
-The rise of COVID-19 in 2019 resulted in a global crisis affecting healthcare, economics, and daily life across societies worldwide, forcing governments to implement unprecedented public health measures. By the end of 2020, countries such as the United States had seen over a million cases of COVID. This meant the race to find a reliable vaccine was on, and it became a primary goal for pharmaceuticals and governments worldwide in order to control the pandemic. Pfizer and BioNTech developed BNT162b2, an mRNA based vaccine, while Janssen and AstraZeneca did not.
+The rise of COVID-19 in 2019 resulted in a global crisis affecting healthcare, economics, and daily life across societies worldwide, forcing governments to implement unprecedented public health measures. By the end of 2020, countries such as the United States had seen over a million cases of COVID. This meant the race to find a reliable vaccine was on, and it became a primary goal for pharmaceuticals and governments worldwide in order to control the pandemic. Pfizer and BioNTech developed BNT162b2, an mRNA based vaccine.
 
 The clinical trial was a placebo-controlled, observer-blinded study that enrolled 43,548 participants aged 16 year or older. The participants were randomly assigned in a 1:1 ratio to receive either two doses of the BNT162b2 vaccine or a placebo, both administered 21 days apart. The primary endpoint was laboratory-confirmed COVID-19 occurring at least 7 days after the second dose (Polack et al., 2020).
 
@@ -93,11 +93,10 @@ $$
 
 The risk of COVID-19 in the vaccine group is roughly $5\%$ that of placebo group, so the vaccine decreases the risk of infection by 95\% -- the vaccine "efficacy".
 
-$$
-\text{vaccine efficacy} = 1 - \widehat{RR} = 1 - \frac{\pi_v}{\pi_p}
-$$
 
-The US FDA requires that a new vaccine demonstrates at least $30\%$ efficacy for approval. Polack et al. (2020) reports a vaccine efficacy of $95.0\%$ with a $95\%$ Bayesian credible inetrval of $[90.3\%,\; 97.6\%]$ using a beta binomial model. In this paper, we intend to extend their analysis by using both Frequentist and Bayesian methods to estimate the efficacy $\psi$ and test the hypothesis $H_0 : \psi = 0.30$ vs $H_1 : \psi > 0.30$.
+$$\text{vaccine efficacy} = 1 - \widehat{RR} = 1 - \frac{\hat{\pi}_v}{\hat{\pi}_p}$$
+
+The US FDA requires that a new vaccine demonstrates at least $30\%$ efficacy for approval. Polack et al. (2020) reports a vaccine efficacy of $95.0\%$ with a $95\%$ Bayesian credible interval of $[90.3\%,\; 97.6\%]$ using a beta binomial model. In this paper, we intend to extend their analysis by using both Frequentist and Bayesian methods to estimate the efficacy $\psi$ and test the hypothesis $H_0 : \psi = 0.30$ vs $H_1 : \psi > 0.30$.
 
 # Statistical Methods
 
@@ -165,7 +164,9 @@ $$\ell' = \frac{-8}{1 - \psi} + \frac{170}{2 - \psi}$$
 We can take the 2nd derivative test to check if it is global maximum:
 
 $$\ell'' = \frac{-8}{(1 - \psi)^2} + \frac{170}{(2 - \psi)^2}$$
-As $\psi < 1$, $\ell'' < 0$, hence $\psi_0^\text{mle} = \frac{154}{162}$ is a global maximum.
+Evaluating at the MLE, we have $-\ell''(\hat{\psi}^{mle}) = 3126.12 > 0$, 
+which confirms $\ell''(\hat{\psi}^{mle}) < 0$ and hence 
+$\hat{\psi}^{mle} = \frac{154}{162}$ is a global maximum.
 
 Assuming the regularity conditions are satisfied, 
 $$
@@ -207,13 +208,13 @@ n <- 170
 Tobs <- 8
 
 # MLE
-psi_hat <- (n - 2*Tobs)/(n - Tobs)
+psi_mle <- (n - 2*Tobs)/(n - Tobs)
 
 # Converting it to pi
-pi_hat <- (1 - psi_hat)/(2 - psi_hat)
+pi_hat <- (1 - psi_mle)/(2 - psi_mle)
 
 # Bootstrap
-psi_hat = replicate(n = B, expr = {
+psi_boot <- replicate(n = B, expr = {
       Tb <- rbinom(1, n, pi_hat)
       (n - 2*Tb)/(n - Tb)}
     )
@@ -238,8 +239,7 @@ The plot shows that the MLE is extremely well approximated by the second order T
 
 Now, we test
 $$
-H_0 : \psi_0 = 0.3\qquad \text{vs} \qquad H_1 : \psi_0 \neq 0.3 .
-$$
+H_0 : \psi = 0.30\qquad \text{vs} \qquad H_1 : \psi > 0.30$$
 
 The likelihood ratio test statistic is based on
 $$
@@ -273,7 +273,7 @@ psi0 = 0.3
 pi0 = (1 - psi0) / (2 - psi0)
 
 # observed LRT statistic
-W = 2*(loglik.psi(psi_hat) - loglik.psi(psi0))
+W = 2*(loglik.psi(psi_mle) - loglik.psi(psi0))
 
 w = numeric(B)
 
@@ -505,7 +505,7 @@ Posterior Median & 0.1985 & 75.2\% \\
 
 The posterior probability that the vaccine does not meet the FDA's 30% efficacy requirement is:
 
-$$P(\psi \le 30\mid t=8) = P\biggr(\pi \ge \frac{0.7}{0.17} \mid t=8\biggr) = 1.939\times10^{-13}$$
+$$P(\psi \le 0.30\mid t=8) = P\biggr(\pi \ge \frac{0.7}{1.7} \mid t=8\biggr) = 1.939\times10^{-13}$$
 Thus, there is significant evidence that the vaccine exceeds the 30% efficacy requirement set by the FDA.
 
 # Discussion / Conclusion
@@ -520,6 +520,8 @@ Doe, J. (2020). Title of the Paper. *Journal Name*, 12(3), 45-67.
 Last, F., & Last, F. (2025). *Book Title*. Publisher.
 
 Smith, A., & Johnson, C. (2023). *Title of the Online Article*. Retrieved from https://www.example.com.
+
+\newpage
 
 # Appendix
 ## Code
