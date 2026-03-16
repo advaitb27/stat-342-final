@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.10.24)  15 MAR 2026 18:05
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.10.24)  15 MAR 2026 18:07
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -621,12 +621,12 @@ Package pdftex.def Info: figures/histogram-1.pdf  used on input line 191.
 c}]
 
 [4]
-<figures/Second order approximation plot-1.pdf, id=49, 469.755pt x 216.81pt>
+<figures/Second order approximation plot-1.pdf, id=49, 469.755pt x 289.08pt>
 File: figures/Second order approximation plot-1.pdf Graphic file (type pdf)
 <use figures/Second order approximation plot-1.pdf>
 Package pdftex.def Info: figures/Second order approximation plot-1.pdf  used on
  input line 285.
-(pdftex.def)             Requested size: 469.75386pt x 216.80946pt.
+(pdftex.def)             Requested size: 469.75386pt x 289.07928pt.
 
 
 [5 <./figures/Second order approximation plot-1.pdf>]
@@ -637,13 +637,16 @@ LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 3
 (C:\Users\advai\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-<figures/beta prior plot-1.pdf, id=69, 469.755pt x 234.8775pt>
+<figures/beta prior plot-1.pdf, id=69, 469.755pt x 289.08pt>
 File: figures/beta prior plot-1.pdf Graphic file (type pdf)
 <use figures/beta prior plot-1.pdf>
 Package pdftex.def Info: figures/beta prior plot-1.pdf  used on input line 360.
 
-(pdftex.def)             Requested size: 469.75386pt x 234.87692pt.
-<figures/prior vs post plot-1.pdf, id=70, 469.755pt x 289.08pt>
+(pdftex.def)             Requested size: 469.75386pt x 289.07928pt.
+
+
+[7 <./figures/beta prior plot-1.pdf>]
+<figures/prior vs post plot-1.pdf, id=83, 469.755pt x 289.08pt>
 File: figures/prior vs post plot-1.pdf Graphic file (type pdf)
 <use figures/prior vs post plot-1.pdf>
 Package pdftex.def Info: figures/prior vs post plot-1.pdf  used on input line 3
@@ -651,10 +654,8 @@ Package pdftex.def Info: figures/prior vs post plot-1.pdf  used on input line 3
 (pdftex.def)             Requested size: 469.75386pt x 289.07928pt.
 
 
-[7 <./figures/beta prior plot-1.pdf>]
-
 [8 <./figures/prior vs post plot-1.pdf>]
-<figures/results histogram-1.pdf, id=96, 469.755pt x 289.08pt>
+<figures/results histogram-1.pdf, id=94, 469.755pt x 289.08pt>
 File: figures/results histogram-1.pdf Graphic file (type pdf)
 <use figures/results histogram-1.pdf>
 Package pdftex.def Info: figures/results histogram-1.pdf  used on input line 42
@@ -747,7 +748,7 @@ rs/advai/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr9.pfb><C:/Users
 advai/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtk10.pfb><C:/Users/
 advai/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb><C:/Users/
 advai/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtti10.pfb>
-Output written on Final-Project.pdf (21 pages, 462798 bytes).
+Output written on Final-Project.pdf (21 pages, 462824 bytes).
 PDF statistics:
  326 PDF objects out of 1000 (max. 8388607)
  43 named destinations out of 1000 (max. 500000)
