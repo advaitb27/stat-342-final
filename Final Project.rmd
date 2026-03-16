@@ -1,6 +1,6 @@
 ---
 title: "From Data to Defense: Statistical Evidence of COVID-19 Vaccine Efficacy"
-author: "Yash Anand Rajpal, Advait Bhargav, Glit Hanpanitkitkan"
+author: "Yash Anand, Advait Bhargav, Glit Hanpanitkitkan"
 date: "`r Sys.Date()`"
 output: pdf_document
 urlcolor: blue
@@ -177,7 +177,7 @@ psi_boot <- replicate(n = B, expr = {
 
 We also construct a parametric bootstrap percentile interval by resampling $T^* \sim \text{Binom}(170, \hat{\pi})$ for $B = 1000$ replicates.
 
-```{r label = "Second order approximation plot", eval=T, echo=F, warning=F, fig.height=4}
+```{r label = "Second order approximation plot", eval=T, echo=F, warning=F, fig.height=4, fig.cap="Second order Taylor approximation of the log-likelihood for vaccine efficacy"}
 loglik.psi <- function(psi){
   ifelse((psi >= 1), NA,
          log(choose(170,8)) + 8*log(1-psi) - 170*log(2-psi))
@@ -195,12 +195,14 @@ The plot shows that the log-likelihood is extremely well approximated by the sec
 
 Now, we test
 $$
-H_0 : \psi = 0.30\qquad \text{vs} \qquad H_1 : \psi > 0.30$$
+H_0 : \psi = 0.30\qquad \text{vs} \qquad H_1 : \psi > 0.30
+$$
 
 The likelihood ratio test statistic is based on
 $$
 W = 2\ln \Lambda  \quad \text{where} \quad \Lambda = \frac{L(\hat \psi_0^\text{mle})}{L(\psi_0^\text{null})}
 $$
+
 $$
 W = 2\left[\ell(\hat\psi_0^\text{mle}) - \ell(\psi_0^\text{null})\right].
 $$
@@ -238,7 +240,7 @@ for(b in 1:B){
 p_val_b = mean(w >= W)
 ```
 
-```{r label = "simulated Ws under null histogram", include = FALSE}
+```{r label = "simulated Ws under null histogram", include = FALSE, fig.cap="Distribution of simulated likelihood ratio statistics under the null hypothesis"}
 hist(w, breaks = 20, 
      xlab = "W", 
      ylab = "Frequency", 
@@ -286,16 +288,16 @@ Coming up with two prior beliefs about $\psi$:
   $$
 \end{enumerate}
 
-So we want a $\text{Beta}(a, b)$ prior for $\pi$ where the median is $\frac{1}{2}$ and the 5th percentile is $\frac{7}{17}$, or $P(\pi \le \frac{7}{17}) = 0.05$. Using the `beta.select` function from the `LearnBayes` library to find the beta prior, we obtain $a = 43.04$ and $b= 43.04$.
+So we want a $\text{Beta}(a, b)$ prior for $\pi$ where the median is $\frac{1}{2}$ and the 5th percentile is $\frac{7}{17}$, or $P(\pi \le \frac{7}{17}) = 0.05$. Using the `beta.select` function from the `LearnBayes` library to find the beta prior, we obtain $a = 43.03$ and $b= 43.03$.
 
 ```{r label = "beta coeffs", eval=TRUE, echo=FALSE}
 b_coeff = beta.select(quantile1 = list(p = 0.05, x = 7/17),
                       quantile2 = list(p=0.5, x = 0.5))
 ```
 
-With the skeptical $Beta(43.04, 43.04)$, we have the beta prior for $\pi$:
+With the skeptical $Beta(43.03, 43.03)$, we have the beta prior for $\pi$:
 
-```{r label = "beta prior plot", eval = TRUE, echo=FALSE, fig.height=4, fig.align='center'}
+```{r label = "beta prior plot", eval = TRUE, echo=FALSE, fig.height=4, fig.align='center', fig.cap="Beta(43.03, 43.03) prior distribution"}
 x_values = seq(0, 1, length.out = 1000)
 alpha = b_coeff[1]
 beta = b_coeff[2]
@@ -309,13 +311,13 @@ plot(x_values, density_values, type = 'l',
 The Beta distribution is conjugate to the binomial and so the posterior must also be a Beta distribution.
 \begin{align*}
 f(T\mid\pi) &\sim Binom(170, \pi) \text{ as the data model,} \\
-g(\pi) &= Beta(43.04, 43.04) \text{ as the prior} \\
-h(\pi\mid t) &= Beta(43.04 + t, 170 + 43.04 - t) \text{ as the posterior} \\
-\text{where t = 8, } h(\pi\mid 8) &= Beta(43.04 + 8, 170 + 43.04 - 8) \\
-\text{thus } h(\pi \mid 8) &= Beta(51.04, 205.04)
+g(\pi) &= Beta(43.03, 43.03) \text{ as the prior} \\
+h(\pi\mid t) &= Beta(43.03 + t, 170 + 43.03 - t) \text{ as the posterior} \\
+\text{where t = 8, } h(\pi\mid 8) &= Beta(43.03 + 8, 170 + 43.03 - 8) \\
+\text{thus } h(\pi \mid 8) &= Beta(51.03, 205.03)
 \end{align*}
 
-```{r label = "prior vs post plot", eval = TRUE, echo = FALSE, fig.height=4, fig.align='center'}
+```{r label = "prior vs post plot", eval = TRUE, echo = FALSE, fig.height=4, fig.align='center', fig.cap="Comparison of prior and posterior distributions"}
 x_values <- seq(0, 1, length.out = 1000)
 n = 170
 t = 8
@@ -347,20 +349,20 @@ ggplot(plot_data, aes(x = pi, y = density, color = distribution)) +
 ```
 
 ```{r label = "posterior median", eval = TRUE, echo = FALSE, results='hide'}
-posterior_median_pi = qbeta(0.5, shape1 = 51.04, shape2 = 205.04)
+posterior_median_pi = qbeta(0.5, shape1 = 51.03, shape2 = 205.03)
 cat("Posterior Median: ", round(posterior_median_pi, 4))
 cat("95% interval for pi (equal tails): (15.28, 25.03)")
 ```
 
 ```{r label = "posterior distribution", eval = TRUE, echo = FALSE, results='hide'}
-qbeta(p = c(0.025, 0.975), shape1 = 51.04, shape2 = 205.04)
+qbeta(p = c(0.025, 0.975), shape1 = 51.03, shape2 = 205.03)
 ```
 
 We also compute the $95\%$ equal-tail credible interval and highest posterior density interval (HPDI) for $\pi$.
 
 ```{r label = "hdi interval", eval = TRUE, echo = FALSE, results='hide'}
-posterior_interval = hdi(qbeta, credMass=0.95, shape1 = 51.04,
-shape2 = 205.04)
+posterior_interval = hdi(qbeta, credMass=0.95, shape1 = 51.03,
+shape2 = 205.03)
 
 cat("95% HPDI: ", round(posterior_interval, 4))
 ```
@@ -377,7 +379,7 @@ The Bayesian p-value is defined as the posterior probability that the null hypot
 In our setting, this becomes $P(\psi \le 0.30 \mid t=8) = P\left(\pi \ge \frac{0.7}{1.7}\mid t=8\right)$, which we compute from the posterior Beta distribution.
 
 ```{r label = "bayesian pval", eval = TRUE, echo = FALSE, results='hide'}
-pbeta(0.7/1.7, shape1 = 51.04, shape2 = 205.04, lower.tail = FALSE)
+pbeta(0.7/1.7, shape1 = 51.03, shape2 = 205.03, lower.tail = FALSE)
 ```
 
 # Results
@@ -407,7 +409,7 @@ $$W = 2\left[\ell\!\left(\tfrac{154}{162}\right) - \ell(0.3)\right] = 121.6$$
 
 with a p-value of $P(\chi^2_1 \ge 121.6) = 2 \times 10^{-28} \approx 0$, providing significant evidence to reject $H_0$. The empirical simulation confirms this as none of the $B=1000$ simulated test statistics under $H_0$ exceeded the observed $W$, yielding an estimated p-value of $< 0.001$.
 
-```{r label = "results histogram", eval = TRUE, echo = FALSE, fig.height=4, fig.align='center'}
+```{r label = "results histogram", eval = TRUE, echo = FALSE, fig.height=4, fig.align='center', fig.cap="Distribution of simulated likelihood ratio statistics under the null hypothesis"}
 hist(w, breaks = 20,
      xlab = "W",
      ylab = "Frequency",
@@ -444,7 +446,7 @@ Both the frequentist and Bayesian analyses provide strong evidence that the Pfiz
 
 Pfizer reported a vaccine efficacy of $95.0\%$ with a $95\%$ Bayesian credible interval of $[90.3\%, 97.6\%]$ and a posterior probability exceeding $0.9999$ that efficacy surpassed $30\%$ using a Beta$(0.700102, 1)$ prior. Our frequentist MLE of $95.1\%$ is nearly identical to their point estimate, however, our Bayesian results differ substantially since our prior is far more conservative than Pfizer's (which is nearly flat and allows the data to dominate the posterior).
 
-```{r label = "prior comparison", eval = TRUE, echo = FALSE, fig.height=4, fig.align='center'}
+```{r label = "prior comparison", eval = TRUE, echo = FALSE, fig.height=4, fig.align='center', fig.cap="Comparison of Pfizer’s prior and the skeptical prior with their corresponding posteriors"}
 x_values <- seq(0, 1, length.out = 1000)
 
 alpha_pfizer <- 0.700102
@@ -452,8 +454,8 @@ beta_pfizer <- 1
 alpha_pfizer_post <- alpha_pfizer + 8
 beta_pfizer_post <- beta_pfizer + 162
 
-alpha_ours <- 43.04
-beta_ours <- 43.04
+alpha_ours <- 43.03
+beta_ours <- 43.03
 alpha_ours_post <- alpha_ours + 8
 beta_ours_post <- beta_ours + 162
 
@@ -467,8 +469,8 @@ plot_data <- data.frame(
   ),
   curve = rep(c("Pfizer prior: (0.70, 1)",
                 "Pfizer posterior: (8.70, 163)",
-                "Our prior: (43.04, 43.04)",
-                "Our posterior: (51.04, 205.04)"),
+                "Our prior: (43.03, 43.03)",
+                "Our posterior: (51.03, 205.03)"),
               each = length(x_values))
 )
 
@@ -590,7 +592,7 @@ Pfizer prior & posterior plot
 ```{r ref.label = "prior comparison", eval = F}
 
 ```
-## Proofs
+## Proof: $T \sim Binom(n, \pi)$
 
 Let $X \sim \text{Binom}(n_1, \pi_v)$ be the number of cases in the vaccine group and $Y \sim \text{Binom}(n_2, \pi_p)$ be the number of cases in the placebo group, with $X$ and $Y$ independent. Define $T = X$ and $n = X + Y$. We wish to show that $T \mid X + Y = n$ is approximately $\text{Binom}(n, \pi)$ where $\pi = \frac{n_1 \pi_v}{n_1 \pi_v + n_2 \pi_p}$.
 
