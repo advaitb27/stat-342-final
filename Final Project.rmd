@@ -124,53 +124,19 @@ $$
 L(\pi) = \binom{170}{8}\pi^8 (1 - \pi)^{162}
 $$
 
-Since $\psi = \cfrac{1-2\pi}{1-\pi}$, solving for $\pi$ and substituting into the likelihood function yields:
-\begin{align*}
-  \psi &= \frac{1-2\pi}{1-\pi}, \quad -\infty < \psi < 1 \\
-  \psi (1 - \pi) &= 1 - 2 \pi \\
-  \psi -\psi\pi  &= 1 - 2 \pi \\
-  2\pi - \psi\pi &= 1 - \psi \\
-  \pi (2 - \psi) &= 1 - \psi \\
-  \pi &= \frac{1 - \psi}{2 - \psi}\\
-\end{align*}
-\begin{align*}
-L^{\ast} (\psi) &= \binom{170}{8} \left(\frac{1 - \psi}{2 - \psi}\right)^8 \left(1 - (\frac{1 - \psi}{2 - \psi})\right)^{162} \quad  \text{after substituting for }  \pi \\
-                &= \binom{170}{8} \left(\frac{1 - \psi}{2 - \psi}\right)^8 \left(\frac{1}{2 - \psi}\right)^{162}
-\end{align*}
-Taking the log of the likelihood function:
-\begin{align*}
- \ell = \ln [L^\ast (\psi)] &= \ln\left(\binom{170}{8}\right) + 8 \ln\left(\frac{1 - \psi}{2 - \psi}\right) + 162 \ln (\frac{1}{2 - \psi}) \\
-                            &= \ln\left(\binom{170}{8}\right) + 8 \ln(1 - \psi) - 8\ln(2 - \psi) - 162 \ln (2 - \psi) \\
-                            &= \ln\left(\binom{170}{8}\right) + 8 \ln(1 - \psi) -170 \ln (2 - \psi)
-\end{align*}
-Now we take the derivative of the log likelihood function $\ell$ with respect to $\psi$ and set it equal to 0: 
-\begin{align*}
-\ell' = \frac{-8}{1 - \psi} + \frac{170}{2 - \psi}&\\
-\frac{-8}{1 - \psi} + \frac{170}{2 - \psi} &= 0 \\
--8(2 - \psi) + 170(1 - \psi) &= 0 \\
--16 + 8 \psi + 170 -170\psi &= 0 \\
-\hat \psi_0 ^{\text{mle}} = \frac{154}{162}
-\end{align*}
+The MLE of $\pi$ is $\hat{\pi}^{mle} = \frac{t}{n} = \frac{8}{170}$. By the invariance property of MLEs, we apply the transformation $\psi = \frac{1-2\pi}{1-\pi}$ directly:
 
-We verify this is a global maximum via the second derivative test: $$\ell'' = \frac{-8}{(1 - \psi)^2} + \frac{170}{(2 - \psi)^2}$$
-Evaluating at the MLE, we have $\ell''(\hat{\psi}^{mle}) = -3126.12 < 0$, 
-which confirms $\ell''(\hat{\psi}^{mle}) < 0$ and hence 
-$\hat{\psi}^{mle} = \frac{154}{162}$ is a global maximum.
+$$
+\hat{\psi}^{mle} = \frac{1 - 2\left(\frac{8}{170}\right)}{1 - \frac{8}{170}} = \frac{\frac{154}{170}}{\frac{162}{170}} = \frac{154}{162}
+$$
 
-Assuming the regularity conditions are satisfied, 
+To construct a confidence interval and perform the likelihood ratio test, we reparametrize the likelihood in terms of $\psi$. Solving $\psi = \frac{1-2\pi}{1-\pi}$ for $\pi$ gives $\pi = \frac{1 - \psi}{2 - \psi}$, and substituting yields:
 $$
-\hat \psi^{mle}_0 \approx Norm \left(\psi_0, \frac{1}{\sqrt{I(\psi_0)}}\right)
+L^{\ast} (\psi) = \binom{170}{8} \left(\frac{1 - \psi}{2 - \psi}\right)^8 \left(\frac{1}{2 - \psi}\right)^{162}
 $$
-where $I(\psi_0) = n E[- \ell''(\psi)]$. We observe $t=8$, so
-\begin{align*}
-I({\psi}_0) &= -\ell''(\hat{\psi}_0^{mle}) \\
-                &= -\left( \frac{-8}{(1-\hat{\psi}_0^{mle})^2} + \frac{170}{(2-\hat{\psi}_0^{mle})^2} \right) \\
-                &= \frac{8}{(1-\hat{\psi}_0^{mle})^2} - \frac{170}{(2-\hat{\psi}_0^{mle})^2} \\
-                &= \frac{8}{\left(1-\frac{154}{162}\right)^2} - \frac{170}{\left(2-\frac{154}{162}\right)^2} \\
-                &= 3126.1235
-\end{align*}
+Taking the log:
 $$
-\hat \psi^{mle}_0 \approx Norm \left(\psi_0, \sqrt{\frac{1}{3126.1235}}\right)
+\ell(\psi) = \ln\left(\binom{170}{8}\right) + 8 \ln(1 - \psi) - 170 \ln(2 - \psi)
 $$
 We now construct a $95\%$ large-sample confidence interval for $\psi$ using the formula:
 
@@ -614,7 +580,7 @@ Bayesian p-value
 ```
 
 Pfizer prior & posterior plot
-```{r ref.label = "pfizer prior posterior", eval = F}
+```{r ref.label = "prior comparison", eval = F}
 
 ```
 ## Proofs
