@@ -25,7 +25,7 @@ knitr::opts_chunk$set(fig.path = "figures/")
 ```
 
 # Abstract
-Write your abstract here.
+This paper evaluates the efficacy of the Pfizer-BioNTech BNT162b2 COVID-19 vaccine using data from its Phase III clinical trial, in which 8 out of 17,411 vaccinated participants and 162 out of 17,511 placebo participants developed confirmed COVID-19 infections. We adopt a conditional binomial model, modeling the number of vaccine-group cases among all 170 confirmed cases as $T \sim \text{Binom}(170, \pi)$, and reparametrize in terms of vaccine efficacy $\psi = (1 - 2\pi)/(1 - \pi)$. Using likelihood inference, we obtain a maximum likelihood estimate of $\hat{\psi}^{mle} = 95.1\%$ with a 95\% confidence interval of $[91.6\%, 98.6\%]$, and a likelihood ratio test rejects the FDA's minimum efficacy threshold of 30\% ($W = 121.6$, $p \approx 0$). Under a Bayesian framework with a skeptical $\text{Beta}(43.04, 43.04)$ prior centered at $\pi = 0.5$ (corresponding to zero efficacy), we obtain a posterior median efficacy of $75.2\%$ with a 95\% credible interval of $[66.6\%, 82.0\%]$ and a Bayesian p-value of $1.94 \times 10^{-13}$. Both frequentist and Bayesian analyses provide overwhelming evidence that BNT162b2 far exceeds the FDA's 30\% efficacy threshold.
 
 # Keywords
 *Vaccine Efficacy*, *Bayesian Inference*, *Likelihood Inference*, *Likelihood Ratio Test*
@@ -33,9 +33,9 @@ Write your abstract here.
 \newpage
 
 # Introduction / Background
-The rise of COVID-19 in 2019 resulted in a global crisis affecting healthcare, economics, and daily life across societies worldwide, forcing governments to implement unprecedented public health measures. By the end of 2020, countries such as the United States had seen over a million cases of COVID. This meant the race to find a reliable vaccine was on, and it became a primary goal for pharmaceuticals and governments worldwide in order to control the pandemic. Pfizer and BioNTech developed BNT162b2, an mRNA based vaccine.
+The emergence of COVID-19 in late 2019 and its rapid global spread in 2020 resulted in a crisis affecting healthcare, economics, and daily life worldwide, forcing governments to implement unprecedented public health measures. By the end of 2020, countries such as the United States had seen over a million cases of COVID. This meant the race to find a reliable vaccine was on, and it became a primary goal for pharmaceuticals and governments worldwide in order to control the pandemic. Pfizer and BioNTech developed BNT162b2, an mRNA-based vaccine.
 
-The clinical trial was a placebo-controlled, observer-blinded study that enrolled 43,548 participants aged 16 year or older. The participants were randomly assigned in a 1:1 ratio to receive either two doses of the BNT162b2 vaccine or a placebo, both administered 21 days apart. The primary endpoint was laboratory-confirmed COVID-19 occurring at least 7 days after the second dose (Polack et al., 2020).
+The clinical trial was a placebo-controlled, observer-blinded study that enrolled 43,548 participants aged 16 years or older. The participants were randomly assigned in a 1:1 ratio to receive either two doses of the BNT162b2 vaccine or a placebo, both administered 21 days apart. The primary endpoint was laboratory-confirmed COVID-19 occurring at least 7 days after the second dose (Polack et al., 2020).
 
 The results of the study are summarized^[The total number of people is less than the one in the study because some people left the study or were not reached out to after.] below.
 
@@ -96,45 +96,35 @@ The risk of COVID-19 in the vaccine group is roughly $5\%$ that of placebo group
 
 $$\text{vaccine efficacy} = 1 - \widehat{RR} = 1 - \frac{\hat{\pi}_v}{\hat{\pi}_p}$$
 
-The US FDA requires that a new vaccine demonstrates at least $30\%$ efficacy for approval. Polack et al. (2020) reports a vaccine efficacy of $95.0\%$ with a $95\%$ Bayesian credible interval of $[90.3\%,\; 97.6\%]$ using a beta binomial model. In this paper, we intend to extend their analysis by using both Frequentist and Bayesian methods to estimate the efficacy $\psi$ and test the hypothesis $H_0 : \psi = 0.30$ vs $H_1 : \psi > 0.30$.
+The US FDA requires that a new vaccine demonstrates at least $30\%$ efficacy for approval. Polack et al. (2020) reports a vaccine efficacy of $95.0\%$ with a $95\%$ Bayesian interval of $[90.3\%,\; 97.6\%]$ using a beta binomial model. In this paper, we extend their analysis using both frequentist and Bayesian methods to estimate the efficacy $\psi$ and test the hypothesis $H_0 : \psi = 0.30$ vs $H_1 : \psi > 0.30$.
 
 # Statistical Methods
 
-## Model
-
-Let $X$ denote the number of COVID-19 cases in the vaccine group among the $n_1 = 17,411$ vaccinated with BNT162b2 participants, and let Y denote the number of cases in the placebo group among the $n_2 = 17,511$ placebo participants. We assume $X\sim \text{Binom}(n_1,\pi_v),\; Y\sim \text{Binom}(n_2, \pi_p)$, where $\pi_v$ and $\pi_p$ are the true infection probabilities in the vaccine and placebo groups, and $X, Y$ are independent.
+Let $X$ denote the number of COVID-19 cases in the vaccine group among the $n_1 = 17,411$ participants vaccinated with BNT162b2, and let $Y$ denote the number of cases in the placebo group among the $n_2 = 17,511$ placebo participants. We assume $X\sim \text{Binom}(n_1,\pi_v),\; Y\sim \text{Binom}(n_2, \pi_p)$, where $\pi_v$ and $\pi_p$ are the true infection probabilities in the vaccine and placebo groups, and $X, Y$ are independent.
 
 The parameter of interest is the vaccine efficacy:
 $$\psi  = 1 -\frac{\pi_v}{\pi_p} = \frac{\pi_p-\pi_v}{\pi_p}$$
-Rather than working with two binomial random variables, we adopt a single binomial model. Let $T$ denote the number of vaccine-group cases among the $n=170$ total confirmed COVID-19 cases, conditional on $X+Y=170$. The distribution of $T$ can be shown to be well approximated by a binomial distribution.
+Rather than working with two binomial random variables, we adopt a single binomial model. Let $T$ denote the number of vaccine-group cases among the $n=170$ total confirmed COVID-19 cases, conditional on $X+Y=170$. The distribution of $T$ can be shown to be well approximated by a binomial distribution (proof in Appendix).
 
 Then
 $$T\sim Binom(n=170, \pi)$$
-where $\pi = P(\text{vaccine} \mid \text{case})$ and can be shown to be equal to
-$$\pi = \frac{n_1\pi_v}{n_1\pi_v+n_2\pi_p} = \frac{\pi_v}{\pi_v + \pi_p}$$
+where $\pi = P(\text{vaccinated} \mid \text{infected})$ and can be shown to be equal to
+$$\pi = \frac{n_1\pi_v}{n_1\pi_v+n_2\pi_p} \approx \frac{\pi_v}{\pi_v + \pi_p}$$
 
 The vaccine efficacy $\psi$ can be written in terms of $\pi$ as:
 $$\psi = \frac{1-2\pi}{1-\pi}, \quad -\infty < \psi < 1$$
-\begin{enumerate}
-    \item When $\pi = 0$ (no cases in the vaccinated group), the efficacy is perfect ($\psi = 1$).
-    
-    \item When $\pi = 0.5$ (proportion of cases is equal in both vaccinated and control groups), there is no efficacy: $\psi = 0$.
-    
-    \item If $\psi < 0$, it indicates there are more infections in the group with the vaccine, so the vaccine is harmful rather than helpful.
-\end{enumerate}
-
-From the table, we observe $t=8$ vaccine cases among the $n=170$ total cases. This seems very small, but we should still conduct tests to verify.
 
 We are interested in an interval estimate for this parameter ($\psi$).
 
 ## Likelihood Inference
 
-For $t = 8$ vaccine cases, The likelihood function for $\pi$ for $T \sim Binom(n = 170, \pi)$ can be written as follows:
+Given the observed $t = 8$ vaccine-group cases, the likelihood function under $T \sim \text{Binom}(170, \pi)$ is:
 
 $$
 L(\pi) = \binom{170}{8}\pi^8 (1 - \pi)^{162}
 $$
-Since, $\psi = \cfrac{1-2\pi}{1-\pi},$, by solving for $\pi$ and then plugging it into the likelihood function we get:
+
+Since $\psi = \cfrac{1-2\pi}{1-\pi}$, solving for $\pi$ and substituting into the likelihood function yields:
 \begin{align*}
   \psi &= \frac{1-2\pi}{1-\pi}, \quad -\infty < \psi < 1 \\
   \psi (1 - \pi) &= 1 - 2 \pi \\
@@ -142,29 +132,28 @@ Since, $\psi = \cfrac{1-2\pi}{1-\pi},$, by solving for $\pi$ and then plugging i
   2\pi - \psi\pi &= 1 - \psi \\
   \pi (2 - \psi) &= 1 - \psi \\
   \pi &= \frac{1 - \psi}{2 - \psi}\\
+\end{align*}
+\begin{align*}
 L^{\ast} (\psi) &= \binom{170}{8} \left(\frac{1 - \psi}{2 - \psi}\right)^8 \left(1 - (\frac{1 - \psi}{2 - \psi})\right)^{162} \quad  \text{after substituting for }  \pi \\
                 &= \binom{170}{8} \left(\frac{1 - \psi}{2 - \psi}\right)^8 \left(\frac{1}{2 - \psi}\right)^{162}
 \end{align*}
 Taking the log of the likelihood function:
 \begin{align*}
- \ell = \ln [L^\ast (\psi)] &= \ln\left(\binom{170}{8}\right) + 8 \ln\left(\frac{1 - \psi}{2 - \psi}\right) + 162 \ln (\frac{1}{2 - \psi})^{162} \\
+ \ell = \ln [L^\ast (\psi)] &= \ln\left(\binom{170}{8}\right) + 8 \ln\left(\frac{1 - \psi}{2 - \psi}\right) + 162 \ln (\frac{1}{2 - \psi}) \\
                             &= \ln\left(\binom{170}{8}\right) + 8 \ln(1 - \psi) - 8\ln(2 - \psi) - 162 \ln (2 - \psi) \\
                             &= \ln\left(\binom{170}{8}\right) + 8 \ln(1 - \psi) -170 \ln (2 - \psi)
 \end{align*}
-Now we take the derivative of the log likelihood function $\ell$ with respect to $\psi$ and set it equal to 0: \newpage
-
-$$\ell' = \frac{-8}{1 - \psi} + \frac{170}{2 - \psi}$$
+Now we take the derivative of the log likelihood function $\ell$ with respect to $\psi$ and set it equal to 0: 
 \begin{align*}
+\ell' = \frac{-8}{1 - \psi} + \frac{170}{2 - \psi}&\\
 \frac{-8}{1 - \psi} + \frac{170}{2 - \psi} &= 0 \\
 -8(2 - \psi) + 170(1 - \psi) &= 0 \\
 -16 + 8 \psi + 170 -170\psi &= 0 \\
 \hat \psi_0 ^{\text{mle}} = \frac{154}{162}
 \end{align*}
 
-We can take the 2nd derivative test to check if it is global maximum:
-
-$$\ell'' = \frac{-8}{(1 - \psi)^2} + \frac{170}{(2 - \psi)^2}$$
-Evaluating at the MLE, we have $-\ell''(\hat{\psi}^{mle}) = 3126.12 > 0$, 
+We verify this is a global maximum via the second derivative test: $$\ell'' = \frac{-8}{(1 - \psi)^2} + \frac{170}{(2 - \psi)^2}$$
+Evaluating at the MLE, we have $\ell''(\hat{\psi}^{mle}) = -3126.12 < 0$, 
 which confirms $\ell''(\hat{\psi}^{mle}) < 0$ and hence 
 $\hat{\psi}^{mle} = \frac{154}{162}$ is a global maximum.
 
@@ -183,7 +172,7 @@ I({\psi}_0) &= -\ell''(\hat{\psi}_0^{mle}) \\
 $$
 \hat \psi^{mle}_0 \approx Norm \left(\psi_0, \sqrt{\frac{1}{3126.1235}}\right)
 $$
-And, now we can calculate a $95\%$ large sample confidence interval for $\psi_0$ by using the formula:
+We now construct a $95\%$ large-sample confidence interval for $\psi$ using the formula:
 
 $$
 \hat \psi_0^\text{mle} \pm z_\frac{\alpha}{2} \widehat{SE} = \hat \psi_0^\text{mle} \pm z_\frac{\alpha}{2} \frac{1}{\sqrt{I(\hat \psi_0^\text{mle})}}
@@ -198,7 +187,6 @@ lower = mle - z*se
 upper = mle + z*se
 ```
 
-By plugging in the values, we can say that we are $95\%$ confident that the true value for $\psi_0$ lies in the interval $[0.9156, 0.9857]$ 
 
 ```{r label = "bootstrap", eval = TRUE, echo = FALSE}
 set.seed(394)
@@ -219,9 +207,10 @@ psi_boot <- replicate(n = B, expr = {
       (n - 2*Tb)/(n - Tb)}
     )
 ```
-The parametric bootstrap percentile interval for $\psi_0$ is [$91.03,\;98.20$].
 
-```{r label = "Second order approximation plot", eval=T, echo=F, warning=F, fig.height=4}
+We also construct a parametric bootstrap percentile interval by resampling $T^* \sim \text{Binom}(170, \hat{\pi})$ for $B = 1000$ replicates.
+
+```{r label = "Second order approximation plot", eval=T, echo=F, warning=F, fig.height=3}
 loglik.psi <- function(psi){
   ifelse((psi >= 1), NA,
          log(choose(170,8)) + 8*log(1-psi) - 170*log(2-psi))
@@ -235,7 +224,7 @@ plot(ml.psi) +
        x = expression(psi))
 ```
 
-The plot shows that the MLE is extremely well approximated by the second order Taylor series, so the normal distribution is appropriate for the large sample distribution of our MLE.
+The plot shows that the log-likelihood is extremely well approximated by the second-order Taylor expansion about the MLE, confirming that the normal approximation to the sampling distribution of $\hat\psi^{mle}$ is appropriate.
 
 Now, we test
 $$
@@ -245,28 +234,16 @@ The likelihood ratio test statistic is based on
 $$
 W = 2\ln \Lambda  \quad \text{where} \quad \Lambda = \frac{L(\hat \psi_0^\text{mle})}{L(\psi_0^\text{null})}
 $$
-
-
 $$
 W = 2\left[\ell(\hat\psi_0^\text{mle}) - \ell(\psi_0^\text{null})\right].
 $$
-By substituting $\hat\psi_0^\text{mle} = \frac{154}{162}$ and $\psi_0^\text{null} = 0.3$ into our log likelihood function from, we get:
-
-\begin{align*}
-W &= 2 \Bigg[ \left( \ln\binom{170}{8} + 8\ln\left(1-\frac{154}{162}\right) -170\ln\left(2-\frac{154}{162}\right)\right) -\left(\ln\binom{170}{8} + 8\ln(1-0.3) -170\ln(2-0.3)\right)\Bigg] \\
-   &= 121.6012
-\end{align*}
-Under $H_0$, the test statistic satisfies $W \sim \chi^2_1$ as we are only testing one parameter. Thus the P-value can be calculated as
-
-$$
-\text{P-value} = P(\chi^2_1 \ge W) = 1 - P(\chi_1^2<121.602)=2\times10^{-28}\approx0
-$$
+Under $H_0$, the test statistic satisfies $W \sim \chi^2_1$ as we are only testing one parameter, and the p-value is $P(\chi^2_1 \ge W)$.
 ```{r label = "pval", eval = TRUE, echo = FALSE}
 W <- 2*((8*log(8 / (162 * 0.7)) - 170*log(170/ (162* 1.7)))) 
 p_val <- pchisq(W, df = 1, lower.tail = FALSE)
 ```
 
-An alternative to calculate the P value is to calculate an empirical value by generating a large number of samples ($B=1000$) under the null hypothesis and calculating the proportion $\geq 121.602$.
+We also estimate the p-value empirically by simulating $B = 1000$ samples under $H_0$ and computing the proportion of simulated test statistics that exceed the observed $W$.
 
 ```{r label = "empirical pval", eval = TRUE, echo = FALSE}
 psi0 = 0.3
@@ -294,7 +271,7 @@ for(b in 1:B){
 p_val_b = mean(w >= W)
 ```
 
-```{r label = "simulated Ws under null histogram", eval = TRUE, echo = FALSE, fig.height=4, fig.align='center'}
+```{r label = "simulated Ws under null histogram", include = FALSE}
 hist(w, breaks = 20, 
      xlab = "W", 
      ylab = "Frequency", 
@@ -302,8 +279,6 @@ hist(w, breaks = 20,
      col = "lightblue",
      xlim = c(-60, 125))
 ```
-
-The bootstrap method also gives us a p-value of 0.
 
 ## Bayesian Inference
 
@@ -316,18 +291,6 @@ Coming up with two prior beliefs about $\psi$:
   \item For $\psi \ge 0.30$, we have
   $$
   \frac{1 - 2\pi}{1 - \pi} \ge 0.30.
-  $$
-  Multiply both sides by $1-\pi$:
-  $$
-  1 - 2\pi \ge 0.30(1-\pi).
-  $$
-  Expanding gives
-  $$
-  1 - 2\pi \ge 0.30 - 0.30\pi.
-  $$
-  Rearranging,
-  $$
-  0.70 \ge 1.70\pi,
   $$
   so
   $$
@@ -356,16 +319,16 @@ Coming up with two prior beliefs about $\psi$:
   $$
 \end{enumerate}
 
-So we want a $\text{Beta}(a, b)$ prior for $\pi$ where the median is $\frac{1}{2}$ and the 5th percentile is $\frac{7}{17}$, or $P(\pi \le \frac{7}{17}) = 0.05$. Using the `beta.select` function from the `LearnBayes` library to find the beta prior, we obtain $a = 43.03$ and $b= 43.03$.
+So we want a $\text{Beta}(a, b)$ prior for $\pi$ where the median is $\frac{1}{2}$ and the 5th percentile is $\frac{7}{17}$, or $P(\pi \le \frac{7}{17}) = 0.05$. Using the `beta.select` function from the `LearnBayes` library to find the beta prior, we obtain $a = 43.04$ and $b= 43.04$.
 
 ```{r label = "beta coeffs", eval=TRUE, echo=FALSE}
 b_coeff = beta.select(quantile1 = list(p = 0.05, x = 7/17),
                       quantile2 = list(p=0.5, x = 0.5))
 ```
 
-With the skeptical $Beta(43.03, 43.03)$, we have the beta prior for $\pi$:
+With the skeptical $Beta(43.04, 43.04)$, we have the beta prior for $\pi$:
 
-```{r label = "beta prior plot", eval = TRUE, echo=FALSE, fig.height=4, fig.align='center'}
+```{r label = "beta prior plot", eval = TRUE, echo=FALSE, fig.height=3.25, fig.align='center'}
 x_values = seq(0, 1, length.out = 1000)
 alpha = b_coeff[1]
 beta = b_coeff[2]
@@ -377,7 +340,6 @@ plot(x_values, density_values, type = 'l',
 ```
 
 The Beta distribution is conjugate to the binomial and so the posterior must also be a Beta distribution.
-
 \begin{align*}
 f(T\mid\pi) &\sim Binom(170, \pi) \text{ as the data model,} \\
 g(\pi) &= Beta(43.04, 43.04) \text{ as the prior} \\
@@ -417,77 +379,77 @@ ggplot(plot_data, aes(x = pi, y = density, color = distribution)) +
   theme_minimal()
 ```
 
-```{r label = "posterior median", eval = TRUE, echo = FALSE}
+```{r label = "posterior median", eval = TRUE, echo = FALSE, results='hide'}
 posterior_median_pi = qbeta(0.5, shape1 = 51.04, shape2 = 205.04)
 cat("Posterior Median: ", round(posterior_median_pi, 4))
-cat("95% Confidence interval for pi (equal tails): (15.28, 25.03)")
+cat("95% interval for pi (equal tails): (15.28, 25.03)")
 ```
 
 ```{r label = "posterior distribution", eval = TRUE, echo = FALSE, results='hide'}
 qbeta(p = c(0.025, 0.975), shape1 = 51.04, shape2 = 205.04)
 ```
 
-There is a 95% probability that the true probability of infection for a vaccinated individual lies in the range 0.1528 to 0.2503.
+We also compute the $95\%$ equal-tail credible interval and highest posterior density interval (HPDI) for $\pi$.
 
-We can also find the highest posterior density interval (HPDI) for $\pi$ using the `HDInterval` library.
-
-```{r label = "hdi interval", eval = TRUE, echo = FALSE}
+```{r label = "hdi interval", eval = TRUE, echo = FALSE, results='hide'}
 posterior_interval = hdi(qbeta, credMass=0.95, shape1 = 51.04,
 shape2 = 205.04)
 
 cat("95% HPDI: ", round(posterior_interval, 4))
 ```
 
-\newpage
+To convert posterior summaries from $\pi$ to the vaccine efficacy scale $\psi$, we use the transformation $\psi = (1-2\pi)/(1-\pi)$. Since $\psi$ is a decreasing function of $\pi$, the lower bound of an interval for $\pi$ maps to the upper bound for $\psi$, and vice versa.
 
-Now that we have the posterior median and intervals for $\pi$, we want to transform it back in terms of $\psi$ in order to keep going with the analysis. The posterior median of $\pi$ is 0.1985, so $P(\pi < 0.1985 \mid t) = 0.5$.
+### Bayesian P-value
 
-Recall that $\psi = \frac{1-2\pi}{1-\pi}$.
-\begin{align*}
-& P(\frac{1-\psi}{2-\psi} < 0.1985\mid t) = 0.5 \\
-& P(\psi > 0.7523\mid t) = 0.5
-\end{align*}
-
-This means that the posterior median of $\psi$ is 0.7523.
-
-Getting the 95% equal tail interval for $\psi$:
-\begin{align*}
-&0.1528 \le \pi \le 0.2503 \\
-&0.1528 \le \frac{1-\psi}{2-\psi} \le 0.2503
-\end{align*}
-
-\textbf{Lower bound}:
-\begin{align*}
-0.1528 &\le \frac{1-\psi}{2-\psi} \\
-\psi &\le 0.8196
-\end{align*}
-\textbf{Upper bound} (right inequality):
-\begin{align*}
-\frac{1-\psi}{2-\psi} &\le 0.2503 \\
-\psi &\ge 0.6661
-\end{align*}
-Thus, the 95\% equal tail CI for $\psi$: $0.6661 \le \psi \le 0.8196$.
-
-
-Following similar steps for the HPDI: $0.6690\le \psi \le 0.8218$.
-
-### Calculating the Bayesian P-value
-
-The Bayesian analog of the P-value is to calculate the posterior probability of the null hypothesis.
-
-To calculate the Bayesian P-value, generally,
+The Bayesian p-value is defined as the posterior probability that the null hypothesis is true:
 \begin{align*}
 \text{Bayes P-value} &: P(H_0 \text{ is TRUE }\mid X) \\
 &= P(\psi \le \psi_0^{(null)}\mid X=x)
 \end{align*}
-
-In this scenario, $P(\psi \le 0.30 \mid 8)$, Therefore $P(\frac{1-2\pi}{1-\pi} \le 0.3 \mid 8)$ = $P(\pi \ge \frac{0.7}{1.7}\mid 8)=1.939\times10^{-13}$
+In our setting, this becomes $P(\psi \le 0.30 \mid t=8) = P\left(\pi \ge \frac{0.7}{1.7}\mid t=8\right)$, which we compute from the posterior Beta distribution.
 
 ```{r label = "bayesian pval", eval = TRUE, echo = FALSE, results='hide'}
 pbeta(0.7/1.7, shape1 = 51.04, shape2 = 205.04, lower.tail = FALSE)
 ```
 
 # Results
+
+## Likelihood Results
+
+The maximum likelihood estimate of vaccine efficacy is $\hat{\psi}^{mle} = \frac{154}{162} \approx 95.1\%$. Table 2 summarizes the frequentist interval estimates for $\psi$.
+
+\begin{table}[htbp]
+\centering
+\caption{Frequentist Interval Estimates for Vaccine Efficacy ($\psi$)}
+\begin{tabular}{lc}
+\toprule
+Method & 95\% Interval \\
+\midrule
+Large-Sample CI & [91.6\%, 98.6\%] \\
+Bootstrap Percentile CI & [91.0\%, 98.2\%] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both intervals place the vaccine efficacy well above $90\%$.
+
+The likelihood ratio test of $H_0: \psi = 0.30$ versus $H_1: \psi > 0.30$ yields a test statistic of:
+
+$$W = 2\left[\ell\!\left(\tfrac{154}{162}\right) - \ell(0.3)\right] = 121.6$$
+
+with a p-value of $P(\chi^2_1 \ge 121.6) = 2 \times 10^{-28} \approx 0$, providing significant evidence to reject $H_0$. The empirical simulation confirms this as none of the $B=1000$ simulated test statistics under $H_0$ exceeded the observed $W$, yielding an estimated p-value of $< 0.001$.
+
+```{r label = "results histogram", eval = TRUE, echo = FALSE, fig.height=4, fig.align='center'}
+hist(w, breaks = 20,
+     xlab = "W",
+     ylab = "Frequency",
+     main = "Histogram of simulated W* values under null",
+     col = "lightblue",
+     xlim = c(-60, 125))
+```
+
+## Bayesian Results
 
 \begin{table}[htbp]
 \centering
@@ -503,25 +465,70 @@ Posterior Median & 0.1985 & 75.2\% \\
 \end{tabular}
 \end{table}
 
-The posterior probability that the vaccine does not meet the FDA's 30% efficacy requirement is:
+The posterior probability that the vaccine does not meet the FDA's $30\%$ efficacy requirement is:
 
 $$P(\psi \le 0.30\mid t=8) = P\biggr(\pi \ge \frac{0.7}{1.7} \mid t=8\biggr) = 1.939\times10^{-13}$$
-Thus, there is significant evidence that the vaccine exceeds the 30% efficacy requirement set by the FDA.
+
+Thus, there is significant evidence that the vaccine exceeds the $30\%$ efficacy requirement set by the FDA.
 
 # Discussion / Conclusion
-Discuss / conclude here.
+
+Both the frequentist and Bayesian analyses provide strong evidence that the Pfizer-BioNTech BNT162b2 vaccine is highly effective and far exceeds the FDA's minimum $30\%$ efficacy threshold. The frequentist MLE of $\hat{\psi} = 95.1\%$ with a $95\%$ confidence interval of $[91.6\%, 98.6\%]$ is consistent with the likelihood ratio test ($W = 121.6$, $p \approx 0$), which rejects $H_0: \psi = 0.30$. The Bayesian analysis, using a deliberately skeptical $\text{Beta}(43.04, 43.04)$ prior (shown in the plot with the prior and posterior distributions), yields a lower posterior median efficacy of $75.2\%$ with a $95\%$ equal-tail interval of $[66.6\%, 82.0\%]$. Despite the conservative prior, the Bayesian p-value of $1.94 \times 10^{-13}$ still overwhelmingly rejects the $30\%$ threshold.
+
+Pfizer reported a vaccine efficacy of $95.0\%$ with a $95\%$ Bayesian credible interval of $[90.3\%, 97.6\%]$ and a posterior probability exceeding $0.9999$ that efficacy surpassed $30\%$ using a Beta$(0.700102, 1)$ prior. Our frequentist MLE of $95.1\%$ is nearly identical to their point estimate, however, our Bayesian results differ substantially since our prior is far more conservative than Pfizer's (which is nearly flat and allows the data to dominate the posterior).
+
+```{r label = "prior comparison", eval = TRUE, echo = FALSE, fig.height=4, fig.align='center'}
+x_values <- seq(0, 1, length.out = 1000)
+
+alpha_pfizer <- 0.700102
+beta_pfizer <- 1
+alpha_pfizer_post <- alpha_pfizer + 8
+beta_pfizer_post <- beta_pfizer + 162
+
+alpha_ours <- 43.04
+beta_ours <- 43.04
+alpha_ours_post <- alpha_ours + 8
+beta_ours_post <- beta_ours + 162
+
+plot_data <- data.frame(
+  pi = rep(x_values, 4),
+  density = c(
+    dbeta(x_values, alpha_pfizer, beta_pfizer),
+    dbeta(x_values, alpha_pfizer_post, beta_pfizer_post),
+    dbeta(x_values, alpha_ours, beta_ours),
+    dbeta(x_values, alpha_ours_post, beta_ours_post)
+  ),
+  curve = rep(c("Pfizer prior: (0.70, 1)",
+                "Pfizer posterior: (8.70, 163)",
+                "Our prior: (43.04, 43.04)",
+                "Our posterior: (51.04, 205.04)"),
+              each = length(x_values))
+)
+
+ggplot(plot_data, aes(x = pi, y = density, color = curve, linetype = curve)) +
+  geom_line(linewidth = 0.6) +
+  scale_linetype_manual(values = c("solid", "solid", "dashed", "dashed")) +
+  labs(
+    title = "Comparison of Pfizer and Skeptical Priors/Posteriors",
+    x = expression(pi),
+    y = "PDF",
+    color = "", linetype = ""
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom", legend.text = element_text(size = 7))
+
+```
+
+This explains why Pfizer's Bayesian interval closely matches the frequentist results, while ours is pulled toward lower efficacy.
+
+Both methods we employed have strengths and limitations. The frequentist likelihood approach provides inference and intervals without needing a prior, but relies on large-sample normal approximations that may be less accurate for small counts such as the $8$ vaccine cases observed. The Bayesian approach allows incorporation of prior beliefs and also gives us direct probability statements about the parameter, but results are sensitive to the choice of prior (as shown by the gap between our posterior median and Pfizer's). Despite these trade-offs, both approaches agree that BNT162b2 far exceeds the regulatory minimum for vaccine efficacy.
+
+\newpage
 
 # Bibliography
 
-Brown, B. (2024). *Lecture Title*. Lecture slides, Course Name, University Name.
+Polack, F. P., Thomas, S. J., Kitchin, N., Absalon, J., Gurtman, A., Lockhart, S., Perez, J. L., P\'{e}rez Marc, G., Moreira, E. D., Zerbini, C., Bailey, R., Swanson, K. A., Roychoudhury, S., Koury, K., Li, P., Kalina, W. V., Cooper, D., Frenck, R. W., Hammitt, L. L., ... Gruber, W. C. (2020). Safety and Efficacy of the BNT162b2 mRNA Covid-19 Vaccine. *New England Journal of Medicine*, 383(27), 2603--2615.
 
-Doe, J. (2020). Title of the Paper. *Journal Name*, 12(3), 45-67.
-
-Last, F., & Last, F. (2025). *Book Title*. Publisher.
-
-Smith, A., & Johnson, C. (2023). *Title of the Online Article*. Retrieved from https://www.example.com.
-
-\newpage
 
 # Appendix
 ## Code
@@ -546,12 +553,12 @@ Large sample confidence interval
 
 ```
 
-Second order taylor approximation plot
+Second order Taylor approximation plot
 ```{r ref.label = "Second order approximation plot", eval=FALSE}
 
 ```
 
-Bootsrap percentile interval
+Bootstrap percentile interval
 ```{r ref.label = "bootstrap", eval=FALSE}
 
 ```
@@ -576,7 +583,7 @@ Producing alpha and beta for beta distribution.
 
 ```
 
-Plotting $beta(\alpha, \beta)$ prior distribution
+Plotting Beta$(\alpha, \beta)$ prior distribution
 ```{r ref.label = "beta prior plot", eval = FALSE}
 
 ```
@@ -596,7 +603,7 @@ Getting posterior distribution
 
 ```
 
-HDI interval
+Highest density interval
 ```{r ref.label = "hdi interval", eval = FALSE}
 
 ```
@@ -606,7 +613,31 @@ Bayesian p-value
 
 ```
 
-## Proofs
-If applicable, include detailed mathematical derivations or additional theoretical explanations.
+Pfizer prior & posterior plot
+```{r ref.label = "pfizer prior posterior", eval = F}
 
-### TODO: PROVE THAT THE DISTRIBUTION OF T CAN BE APPROXIMATED BY A BINOMIAL DISTRIBUTION
+```
+## Proofs
+
+Let $X \sim \text{Binom}(n_1, \pi_v)$ be the number of cases in the vaccine group and $Y \sim \text{Binom}(n_2, \pi_p)$ be the number of cases in the placebo group, with $X$ and $Y$ independent. Define $T = X$ and $n = X + Y$. We wish to show that $T \mid X + Y = n$ is approximately $\text{Binom}(n, \pi)$ where $\pi = \frac{n_1 \pi_v}{n_1 \pi_v + n_2 \pi_p}$.
+
+Since $\pi_v$ and $\pi_p$ are both very small, the binomial distributions for $X$ and $Y$ are well approximated by Poisson distributions:
+$$X \approx \text{Poisson}(\lambda_1), \quad Y \approx \text{Poisson}(\lambda_2)$$
+where $\lambda_1 = n_1 \pi_v$ and $\lambda_2 = n_2 \pi_p$.
+
+By the additive property of independent Poisson random variables:
+$$X + Y \approx \text{Poisson}(\lambda_1 + \lambda_2)$$
+
+For $t = 0, 1, \ldots, n$, using the definition of conditional probability:
+\begin{align*}
+P(X = t \mid X + Y = n) &= \frac{P(X = t,\; Y = n - t)}{P(X + Y = n)} \\
+&= \frac{P(X = t) \cdot P(Y = n - t)}{P(X + Y = n)} \\
+&= \frac{\dfrac{e^{-\lambda_1} \lambda_1^t}{t!} \cdot \dfrac{e^{-\lambda_2} \lambda_2^{n-t}}{(n-t)!}}{\dfrac{e^{-(\lambda_1+\lambda_2)} (\lambda_1+\lambda_2)^n}{n!}} \\
+&= \frac{n!}{t!(n-t)!} \cdot \frac{\lambda_1^t \cdot \lambda_2^{n-t}}{(\lambda_1 + \lambda_2)^n} \\
+&= \binom{n}{t} \left(\frac{\lambda_1}{\lambda_1+\lambda_2}\right)^t \left(\frac{\lambda_2}{\lambda_1+\lambda_2}\right)^{n-t}
+\end{align*}
+
+This is the probability mass function of a $\text{Binom}\left(n,\; \frac{\lambda_1}{\lambda_1+\lambda_2}\right)$ distribution. Therefore:
+$$T \mid X + Y = n \;\sim\; \text{Binom}\left(n,\; \pi\right) \quad \text{where } \pi = \frac{\lambda_1}{\lambda_1 + \lambda_2} = \frac{n_1\pi_v}{n_1\pi_v + n_2\pi_p}$$
+
+In our setting, $n_1 = 17{,}411 \approx n_2 = 17{,}511$, so $\frac{n_1}{n_2} \approx 1$ and the expression simplifies to $\pi \approx \frac{\pi_v}{\pi_v + \pi_p}$.
