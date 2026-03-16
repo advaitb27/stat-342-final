@@ -1,5 +1,5 @@
 ---
-title: "COVID-19 Vaccination Analysis"
+title: "From Data to Defense: Statistical Evidence of COVID-19 Vaccine Efficacy"
 author: "Yash Anand Rajpal, Advait Bhargav, Glit Hanpanitkitkan"
 date: "`r Sys.Date()`"
 output: pdf_document
@@ -10,6 +10,7 @@ header-includes:
 - \usepackage{graphicx}
 - \usepackage{booktabs} 
 - \usepackage{caption}
+- \usepackage{hanging}
 fontsize: 11pt
 ---
 
@@ -33,7 +34,7 @@ This paper evaluates the efficacy of the Pfizer-BioNTech BNT162b2 COVID-19 vacci
 \newpage
 
 # Introduction / Background
-The emergence of COVID-19 in late 2019 and its rapid global spread in 2020 resulted in a crisis affecting healthcare, economics, and daily life worldwide, forcing governments to implement unprecedented public health measures. By the end of 2020, countries such as the United States had seen over a million cases of COVID. This meant the race to find a reliable vaccine was on, and it became a primary goal for pharmaceuticals and governments worldwide in order to control the pandemic. Pfizer and BioNTech developed BNT162b2, an mRNA-based vaccine.
+The emergence of COVID-19 in late 2019 and its rapid global spread in 2020 resulted in a crisis affecting healthcare, economics, and daily life worldwide, forcing governments to implement unprecedented public health measures. By the end of 2020, countries such as the United States had seen over a million cases of COVID (WHO, 2021). This meant the race to find a reliable vaccine was on, and it became a primary goal for pharmaceuticals and governments worldwide in order to control the pandemic. Pfizer and BioNTech developed BNT162b2, an mRNA-based vaccine that instructs human cells to produce the SARS-CoV-2 spike protein, stimulating an immune response that helps protect against infection (U.S. National Library of Medicine, 2022).
 
 The clinical trial was a placebo-controlled, observer-blinded study that enrolled 43,548 participants aged 16 years or older. The participants were randomly assigned in a 1:1 ratio to receive either two doses of the BNT162b2 vaccine or a placebo, both administered 21 days apart. The primary endpoint was laboratory-confirmed COVID-19 occurring at least 7 days after the second dose (Polack et al., 2020).
 
@@ -493,8 +494,14 @@ Both methods we employed have strengths and limitations. The frequentist likelih
 
 # Bibliography
 
+\begin{hangparas}{.25in}{1}
 Polack, F. P., Thomas, S. J., Kitchin, N., Absalon, J., Gurtman, A., Lockhart, S., Perez, J. L., P\'{e}rez Marc, G., Moreira, E. D., Zerbini, C., Bailey, R., Swanson, K. A., Roychoudhury, S., Koury, K., Li, P., Kalina, W. V., Cooper, D., Frenck, R. W., Hammitt, L. L., ... Gruber, W. C. (2020). Safety and Efficacy of the BNT162b2 mRNA Covid-19 Vaccine. *New England Journal of Medicine*, 383(27), 2603--2615.
 
+U.S. National Library of Medicine. (2022). What are mRNA vaccines and how do they work? MedlinePlus. https://medlineplus.gov/genetics/understanding/therapy/mrnavaccines/
+
+World Health Organization. (2021). WHO Coronavirus (COVID-19) Dashboard. Retrieved from
+https://covid19.who.int/.
+\end{hangparas}
 
 # Appendix
 ## Code
